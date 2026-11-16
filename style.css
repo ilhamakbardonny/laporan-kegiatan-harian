@@ -232,7 +232,61 @@ h2 {
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: scale(0.97);
+}
+
+.btn-success:active,
+.btn-edit:active,
+.btn-danger:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost:active {
+  background: var(--primary-light);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.row-added {
+  animation: popIn 0.4s ease forwards;
+}
+
+@keyframes slideOut {
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+.row-removed {
+  animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.saved-badge {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--success);
+  color: #fff;
+  padding: 0.625rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.saved-badge.show {
+  opacity: 1;
+  animation: pulseRing 1.5s infinite;
 }
 
 .btn-outline {

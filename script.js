@@ -28,6 +28,18 @@ const statTertunda = document.getElementById("statTertunda");
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let editingId = null;
 
+function showSaved() {
+  let badge = document.querySelector(".saved-badge");
+  if (!badge) {
+    badge = document.createElement("div");
+    badge.className = "saved-badge";
+    badge.textContent = "Data tersimpan";
+    document.body.appendChild(badge);
+  }
+  badge.classList.add("show");
+  setTimeout(() => badge.classList.remove("show"), 2000);
+}
+
 function setToday() {
   const today = new Date().toISOString().split("T")[0];
   dateInput.value = today;
@@ -37,6 +49,7 @@ function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   renderReports();
   updateStats();
+  showSaved();
 }
 
 function escapeHtml(text) {
@@ -75,8 +88,10 @@ function renderReports() {
 
   emptyState.style.display = "none";
 
-  sorted.forEach((report) => {
+  sorted.forEach((report, index) => {
     const tr = document.createElement("tr");
+    tr.className = "row-added";
+    tr.style.animationDelay = `${index * 0.05}s`;
     tr.innerHTML = `
       <td>${escapeHtml(report.date)}</td>
       <td><strong>${escapeHtml(report.activity)}</strong></td>
@@ -161,8 +176,22 @@ window.editReport = function (id) {
 
 window.deleteReport = function (id) {
   if (!confirm("Yakin ingin menghapus laporan ini?")) return;
-  reports = reports.filter((r) => r.id !== id);
-  save();
+
+  const tr = Array.from(tbody.querySelectorAll("tr")).find((row) => {
+    const btn = row.querySelector(`button[onclick="deleteReport('${id}')"]`);
+    return btn && btn.closest("tr") === row;
+  });
+
+  if (tr) {
+    tr.classList.add("row-removed");
+    tr.addEventListener("animationend", () => {
+      reports = reports.filter((r) => r.id !== id);
+      save();
+    }, { once: true });
+  } else {
+    reports = reports.filter((r) => r.id !== id);
+    save();
+  }
 };
 
 function exportData() {
@@ -176,6 +205,7 @@ function exportData() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  showSaved();
 }
 
 function importData(file) {
