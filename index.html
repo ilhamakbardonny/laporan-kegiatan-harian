@@ -3,24 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#2563eb" />
+  <link rel="manifest" href="manifest.json" />
   <title>Laporan Kegiatan Harian</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <div class="brand">Laporan Harian</div>
-      <nav class="nav">
-        <a href="#" class="nav-link active">Home</a>
-        <a href="#" class="nav-link">Laporan</a>
-      </nav>
+      <div class="brand">
+        <span class="brand-icon">📋</span> Laporan Harian
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="exportBtn" title="Export Data">Export</button>
+        <button class="btn btn-ghost" id="importBtn" title="Import Data">Import</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" />
+      </div>
     </div>
   </header>
 
   <main class="container">
+    <section class="card stat-card">
+      <div class="stat-row">
+        <div class="stat-item">
+          <span class="stat-value" id="statTotal">0</span>
+          <span class="stat-label">Total Laporan</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value stat-success" id="statSelesai">0</span>
+          <span class="stat-label">Selesai</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value stat-proses" id="statProses">0</span>
+          <span class="stat-label">Proses</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value stat-tertunda" id="statTertunda">0</span>
+          <span class="stat-label">Tertunda</span>
+        </div>
+      </div>
+    </section>
+
     <section class="card">
-      <h2>Tambah Laporan</h2>
-      <form id="reportForm">
+      <div class="card-header">
+        <h2>Tambah Laporan</h2>
+        <button class="btn btn-ghost btn-sm" id="toggleForm">Batal</button>
+      </div>
+      <form id="reportForm" class="form-grid">
+        <input type="hidden" id="editId" />
         <div class="form-group">
           <label for="date">Tanggal</label>
           <input type="date" id="date" required />
@@ -29,7 +59,7 @@
           <label for="activity">Kegiatan</label>
           <input type="text" id="activity" placeholder="Contoh: Rapat tim" required />
         </div>
-        <div class="form-group">
+        <div class="form-group span-2">
           <label for="description">Deskripsi</label>
           <textarea id="description" rows="3" placeholder="Detail kegiatan..."></textarea>
         </div>
@@ -41,12 +71,27 @@
             <option value="Tertunda">Tertunda</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary">Simpan</button>
+        <div class="form-group span-2 form-actions">
+          <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">Simpan</button>
+          <button type="button" class="btn btn-outline" id="cancelEdit">Batal Edit</button>
+        </div>
       </form>
     </section>
 
     <section class="card">
-      <h2>Daftar Laporan</h2>
+      <div class="card-header">
+        <h2>Daftar Laporan</h2>
+        <div class="toolbar">
+          <input type="text" id="searchInput" placeholder="Cari kegiatan..." />
+          <select id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="Selesai">Selesai</option>
+            <option value="Proses">Proses</option>
+            <option value="Tertunda">Tertunda</option>
+          </select>
+          <input type="date" id="filterDate" />
+        </div>
+      </div>
       <div class="table-wrap" id="reportList">
         <table>
           <thead>
@@ -61,12 +106,15 @@
           <tbody></tbody>
         </table>
       </div>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <p>Tidak ada laporan yang cocok.</p>
+      </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>&copy; 2026 Laporan Kegiatan Harian. Dibuat dengan <span class="heart">♥</span> dan dikembangkan secara open source.</p>
+      <p>&copy; 2026 Laporan Kegiatan Harian. Open source &mdash; <a href="https://github.com/ilhamakbardonny/laporan-kegiatan-harian" target="_blank" rel="noopener">GitHub</a></p>
     </div>
   </footer>
 
