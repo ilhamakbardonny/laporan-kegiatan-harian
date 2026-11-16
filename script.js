@@ -27,6 +27,7 @@ const statTertunda = document.getElementById("statTertunda");
 
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let editingId = null;
+let statusChart = null;
 
 function showSaved() {
   let badge = document.querySelector(".saved-badge");
@@ -57,6 +58,7 @@ function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   renderReports();
   updateStats();
+  updateCharts();
   showSaved();
 }
 
@@ -114,6 +116,10 @@ function renderReports() {
     `;
     tbody.appendChild(tr);
   });
+
+  if (typeof AOS !== "undefined") {
+    AOS.refresh();
+  }
 }
 
 function updateStats() {
@@ -144,7 +150,12 @@ function addOrUpdateReport(e) {
   };
 
   if (!reportData.date || !reportData.activity) {
-    alert("Tanggal dan kegiatan wajib diisi.");
+    Swal.fire({
+      icon: "warning",
+      title: "Perhatian",
+      text: "Tanggal dan kegiatan wajib diisi.",
+      confirmButtonColor: "#6366f1",
+    });
     return;
   }
 
@@ -153,11 +164,27 @@ function addOrUpdateReport(e) {
     if (idx !== -1) {
       reports[idx] = { ...reports[idx], ...reportData, updatedAt: new Date().toISOString() };
     }
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: "Laporan berhasil diperbarui.",
+      timer: 1500,
+      showConfirmButton: false,
+      confirmButtonColor: "#6366f1",
+    });
   } else {
     reports.push({
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       ...reportData,
       createdAt: new Date().toISOString(),
+    });
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: "Laporan berhasil disimpan.",
+      timer: 1500,
+      showConfirmButton: false,
+      confirmButtonColor: "#6366f1",
     });
   }
 
@@ -183,23 +210,43 @@ window.editReport = function (id) {
 };
 
 window.deleteReport = function (id) {
-  if (!confirm("Yakin ingin menghapus laporan ini?")) return;
+  Swal.fire({
+    icon: "question",
+    title: "Yakin ingin menghapus?",
+    text: "Laporan ini akan dihapus permanen.",
+    showCancelButton: true,
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#64748b",
+    confirmButtonText: "Hapus",
+    cancelButtonText: "Batal",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const tr = Array.from(tbody.querySelectorAll("tr")).find((row) => {
+        const btn = row.querySelector(`button[onclick="deleteReport('${id}')"]`);
+        return btn && btn.closest("tr") === row;
+      });
 
-  const tr = Array.from(tbody.querySelectorAll("tr")).find((row) => {
-    const btn = row.querySelector(`button[onclick="deleteReport('${id}')"]`);
-    return btn && btn.closest("tr") === row;
+      if (tr) {
+        tr.classList.add("row-removed");
+        tr.addEventListener("animationend", () => {
+          reports = reports.filter((r) => r.id !== id);
+          save();
+        }, { once: true });
+      } else {
+        reports = reports.filter((r) => r.id !== id);
+        save();
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Terhapus",
+        text: "Laporan berhasil dihapus.",
+        timer: 1500,
+        showConfirmButton: false,
+        confirmButtonColor: "#dc2626",
+      });
+    }
   });
-
-  if (tr) {
-    tr.classList.add("row-removed");
-    tr.addEventListener("animationend", () => {
-      reports = reports.filter((r) => r.id !== id);
-      save();
-    }, { once: true });
-  } else {
-    reports = reports.filter((r) => r.id !== id);
-    save();
-  }
 };
 
 function exportData() {
@@ -222,18 +269,111 @@ function importData(file) {
     try {
       const imported = JSON.parse(e.target.result);
       if (!Array.isArray(imported)) throw new Error("Format tidak valid");
-      if (confirm(`Impor ${imported.length} laporan? Data akan digabungkan dengan yang ada.`)) {
-        reports = [...reports, ...imported].map((r, i) => ({
-          ...r,
-          id: r.id || `imported-${Date.now()}-${i}`,
-        }));
-        save();
-      }
+      Swal.fire({
+        icon: "question",
+        title: "Impor Data",
+        text: `Impor ${imported.length} laporan? Data akan digabungkan dengan yang ada.`,
+        showCancelButton: true,
+        confirmButtonColor: "#6366f1",
+        cancelButtonColor: "#64748b",
+        confirmButtonText: "Impor",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          reports = [...reports, ...imported].map((r, i) => ({
+            ...r,
+            id: r.id || `imported-${Date.now()}-${i}`,
+          }));
+          save();
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Data berhasil diimpor.",
+            timer: 1500,
+            showConfirmButton: false,
+            confirmButtonColor: "#6366f1",
+          });
+        }
+      });
     } catch (err) {
-      alert("Gagal mengimpor file: " + err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Gagal mengimpor file: " + err.message,
+        confirmButtonColor: "#dc2626",
+      });
     }
   };
   reader.readAsText(file);
+}
+
+function initCharts() {
+  const ctx = document.getElementById("statusChart");
+  if (!ctx) return;
+
+  statusChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Selesai", "Proses", "Tertunda"],
+      datasets: [{
+        data: [0, 0, 0],
+        backgroundColor: ["#16a34a", "#ca8a04", "#dc2626"],
+        borderColor: ["#fff", "#fff", "#fff"],
+        borderWidth: 3,
+        hoverOffset: 20,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            color: document.body.getAttribute("data-theme") === "dark" ? "#94a3b8" : "#64748b",
+            font: { family: "Inter", size: 12 },
+            padding: 20,
+          },
+        },
+        tooltip: {
+          backgroundColor: document.body.getAttribute("data-theme") === "dark" ? "#1e293b" : "#fff",
+          titleColor: document.body.getAttribute("data-theme") === "dark" ? "#f8fafc" : "#0f172a",
+          bodyColor: document.body.getAttribute("data-theme") === "dark" ? "#94a3b8" : "#64748b",
+        },
+      },
+      cutout: "70%",
+    },
+  });
+}
+
+function updateCharts() {
+  if (!statusChart) return;
+
+  const selesai = reports.filter((r) => r.status === "Selesai").length;
+  const proses = reports.filter((r) => r.status === "Proses").length;
+  const tertunda = reports.filter((r) => r.status === "Tertunda").length;
+
+  statusChart.data.datasets[0].data = [selesai, proses, tertunda];
+  statusChart.update();
+}
+
+function initGSAP() {
+  gsap.from(".stat-card", {
+    duration: 0.8,
+    y: 30,
+    opacity: 0,
+    stagger: 0.15,
+    ease: "power3.out",
+  });
+
+  gsap.from(".card-body", {
+    duration: 0.8,
+    y: 30,
+    opacity: 0,
+    stagger: 0.1,
+    ease: "power3.out",
+    delay: 0.2,
+  });
 }
 
 form.addEventListener("submit", addOrUpdateReport);
@@ -262,16 +402,13 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-window.addEventListener("alpine:init", () => {
-  Alpine.data("themeCtrl", () => ({
-    theme: localStorage.getItem("theme") || "light",
-    init() {
-      document.body.setAttribute("data-theme", this.theme);
-    },
-    toggle() {
-      this.theme = this.theme === "light" ? "dark" : "light";
-      document.body.setAttribute("data-theme", this.theme);
-      localStorage.setItem("theme", this.theme);
-    },
-  }));
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof AOS !== "undefined") {
+    AOS.init({
+      duration: 800,
+      easing: "ease-out",
+      once: false,
+      mirror: true,
+    });
+  }
 });
