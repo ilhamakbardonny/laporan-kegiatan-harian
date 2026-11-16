@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Laporan Kegiatan Harian</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">Laporan Harian</div>
+      <nav class="nav">
+        <a href="#" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">Laporan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Tambah Laporan</h2>
+      <form id="reportForm">
+        <div class="form-group">
+          <label for="date">Tanggal</label>
+          <input type="date" id="date" required />
+        </div>
+        <div class="form-group">
+          <label for="activity">Kegiatan</label>
+          <input type="text" id="activity" placeholder="Contoh: Rapat tim" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Deskripsi</label>
+          <textarea id="description" rows="3" placeholder="Detail kegiatan..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="Selesai">Selesai</option>
+            <option value="Proses">Proses</option>
+            <option value="Tertunda">Tertunda</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Daftar Laporan</h2>
+      <div class="table-wrap" id="reportList">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Kegiatan</th>
+              <th>Deskripsi</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Laporan Kegiatan Harian. Dibuat dengan <span class="heart">♥</span> dan dikembangkan secara open source.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

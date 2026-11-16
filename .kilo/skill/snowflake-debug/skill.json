@@ -1,0 +1,7 @@
+{
+  "name": "snowflake-debug",
+  "version": "1.0.0",
+  "description": "Debug Snowflake SQL queries: performance, syntax, optimization",
+  "author": "user",
+  "license": "MIT"
+}
