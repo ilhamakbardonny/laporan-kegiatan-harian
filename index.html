@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#2563eb" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <title>Laporan Kegiatan Harian</title>
@@ -13,113 +14,125 @@
 <body x-data="{}" x-init="setToday(); renderReports(); updateStats()">
   <header class="site-header animate__animated animate__fadeInDown">
     <div class="container header-inner">
-      <div class="brand">
-        <span class="brand-icon">📋</span> Laporan Harian
+      <div class="brand d-flex align-items-center gap-2">
+        <span class="brand-icon fs-4">📋</span>
+        <span class="fw-bold fs-5 text-primary">Laporan Harian</span>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-ghost" id="exportBtn" title="Export Data">Export</button>
-        <button class="btn btn-ghost" id="importBtn" title="Import Data">Import</button>
-        <input type="file" id="importFile" accept=".json" style="display:none" />
+      <div class="header-actions d-flex gap-2">
+        <button class="btn btn-outline-primary btn-sm" id="exportBtn" title="Export Data">Export</button>
+        <button class="btn btn-outline-secondary btn-sm" id="importBtn" title="Import Data">Import</button>
+        <input type="file" id="importFile" accept=".json" class="d-none" />
       </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="card stat-card animate__animated animate__fadeIn">
-      <div class="stat-row">
-        <div class="stat-item">
-          <span class="stat-value" id="statTotal">0</span>
-          <span class="stat-label">Total Laporan</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-value stat-success" id="statSelesai">0</span>
-          <span class="stat-label">Selesai</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-value stat-proses" id="statProses">0</span>
-          <span class="stat-label">Proses</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-value stat-tertunda" id="statTertunda">0</span>
-          <span class="stat-label">Tertunda</span>
+  <main class="container py-4">
+    <section class="card stat-card animate__animated animate__fadeIn mb-4 border-0 shadow-sm">
+      <div class="card-body py-4">
+        <div class="stat-row row g-4">
+          <div class="col-md-3 stat-item animate__animated animate__fadeIn">
+            <span class="stat-value text-primary" id="statTotal">0</span>
+            <span class="stat-label text-muted small fw-semibold">Total Laporan</span>
+          </div>
+          <div class="col-md-3 stat-item animate__animated animate__fadeIn animate__delay-100ms">
+            <span class="stat-value text-success" id="statSelesai">0</span>
+            <span class="stat-label text-muted small fw-semibold">Selesai</span>
+          </div>
+          <div class="col-md-3 stat-item animate__animated animate__fadeIn animate__delay-200ms">
+            <span class="stat-value text-warning" id="statProses">0</span>
+            <span class="stat-label text-muted small fw-semibold">Proses</span>
+          </div>
+          <div class="col-md-3 stat-item animate__animated animate__fadeIn animate__delay-300ms">
+            <span class="stat-value text-danger" id="statTertunda">0</span>
+            <span class="stat-label text-muted small fw-semibold">Tertunda</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="card animate__animated animate__fadeIn">
-      <div class="card-header">
-        <h2>Tambah Laporan</h2>
-        <button class="btn btn-ghost btn-sm" id="toggleForm">Batal</button>
+    <section class="card animate__animated animate__fadeIn mb-4 border-0 shadow-sm">
+      <div class="card-body p-4">
+        <div class="card-header d-flex justify-content-between align-items-center mb-3 border-0 bg-transparent">
+          <h2 class="h5 mb-0 fw-bold text-dark">Tambah Laporan</h2>
+          <button class="btn btn-link text-decoration-none text-secondary" id="toggleForm">Batal</button>
+        </div>
+        <form id="reportForm" class="row g-3">
+          <input type="hidden" id="editId" />
+          <div class="col-md-4 form-group">
+            <label for="date" class="form-label fw-semibold text-muted small">Tanggal</label>
+            <input type="date" class="form-control form-control-sm" id="date" required />
+          </div>
+          <div class="col-md-4 form-group">
+            <label for="activity" class="form-label fw-semibold text-muted small">Kegiatan</label>
+            <input type="text" class="form-control form-control-sm" id="activity" placeholder="Contoh: Rapat tim" required />
+          </div>
+          <div class="col-md-4 form-group">
+            <label for="status" class="form-label fw-semibold text-muted small">Status</label>
+            <select class="form-select form-control-sm" id="status">
+              <option value="Selesai">Selesai</option>
+              <option value="Proses">Proses</option>
+              <option value="Tertunda">Tertunda</option>
+            </select>
+          </div>
+          <div class="col-12 form-group">
+            <label for="description" class="form-label fw-semibold text-muted small">Deskripsi</label>
+            <textarea class="form-control form-control-sm" id="description" rows="3" placeholder="Detail kegiatan..."></textarea>
+          </div>
+          <div class="col-12 form-actions d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-submit flex-fill" id="submitBtn">Simpan</button>
+            <button type="button" class="btn btn-outline-secondary" id="cancelEdit">Batal Edit</button>
+          </div>
+        </form>
       </div>
-      <form id="reportForm" class="form-grid">
-        <input type="hidden" id="editId" />
-        <div class="form-group">
-          <label for="date">Tanggal</label>
-          <input type="date" id="date" required />
-        </div>
-        <div class="form-group">
-          <label for="activity">Kegiatan</label>
-          <input type="text" id="activity" placeholder="Contoh: Rapat tim" required />
-        </div>
-        <div class="form-group span-2">
-          <label for="description">Deskripsi</label>
-          <textarea id="description" rows="3" placeholder="Detail kegiatan..."></textarea>
-        </div>
-        <div class="form-group">
-          <label for="status">Status</label>
-          <select id="status">
-            <option value="Selesai">Selesai</option>
-            <option value="Proses">Proses</option>
-            <option value="Tertunda">Tertunda</option>
-          </select>
-        </div>
-        <div class="form-group span-2 form-actions">
-          <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">Simpan</button>
-          <button type="button" class="btn btn-outline" id="cancelEdit">Batal Edit</button>
-        </div>
-      </form>
     </section>
 
-    <section class="card animate__animated animate__fadeIn">
-      <div class="card-header">
-        <h2>Daftar Laporan</h2>
-        <div class="toolbar">
-          <input type="text" id="searchInput" placeholder="Cari kegiatan..." />
-          <select id="filterStatus">
-            <option value="">Semua Status</option>
-            <option value="Selesai">Selesai</option>
-            <option value="Proses">Proses</option>
-            <option value="Tertunda">Tertunda</option>
-          </select>
-          <input type="date" id="filterDate" />
+    <section class="card animate__animated animate__fadeIn border-0 shadow-sm">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+          <div>
+            <h2 class="h5 mb-0 fw-bold text-dark">Daftar Laporan</h2>
+          </div>
+          <div class="toolbar d-flex gap-2 flex-wrap">
+            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Cari kegiatan..." />
+            <select class="form-select form-control-sm" id="filterStatus">
+              <option value="">Semua Status</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Proses">Proses</option>
+              <option value="Tertunda">Tertunda</option>
+            </select>
+            <input type="date" class="form-control form-control-sm" id="filterDate" />
+          </div>
         </div>
-      </div>
-      <div class="table-wrap" id="reportList">
-        <table>
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Kegiatan</th>
-              <th>Deskripsi</th>
-              <th>Status</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div id="emptyState" class="empty-state" style="display:none">
-        <p>Tidak ada laporan yang cocok.</p>
+        <div class="table-wrap rounded-3 border overflow-hidden" id="reportList">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th class="fw-semibold text-muted small">Tanggal</th>
+                <th class="fw-semibold text-muted small">Kegiatan</th>
+                <th class="fw-semibold text-muted small">Deskripsi</th>
+                <th class="fw-semibold text-muted small">Status</th>
+                <th class="fw-semibold text-muted small text-end">Aksi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="emptyState" class="empty-state text-center py-5 border rounded-3" style="display:none">
+          <p class="text-muted fw-medium">Tidak ada laporan yang cocok.</p>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer animate__animated animate__fadeInUp">
-    <div class="container">
-      <p>&copy; 2026 Laporan Kegiatan Harian. Open source &mdash; <a href="https://github.com/ilhamakbardonny/laporan-kegiatan-harian" target="_blank" rel="noopener">GitHub</a></p>
+  <footer class="site-footer mt-5 animate__animated animate__fadeInUp">
+    <div class="container py-4 border-top">
+      <p class="mb-0 text-muted small">&copy; 2026 Laporan Kegiatan Harian. Open source &mdash;
+        <a href="https://github.com/ilhamakbardonny/laporan-kegiatan-harian" target="_blank" rel="noopener" class="text-primary text-decoration-none">GitHub</a>
+      </p>
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
