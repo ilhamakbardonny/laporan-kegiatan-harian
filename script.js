@@ -40,6 +40,14 @@ function showSaved() {
   setTimeout(() => badge.classList.remove("show"), 2000);
 }
 
+function applyTheme(theme) {
+  document.body.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+}
+
+const savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+
 function setToday() {
   const today = new Date().toISOString().split("T")[0];
   dateInput.value = today;
@@ -253,3 +261,17 @@ if ("serviceWorker" in navigator) {
     });
   });
 }
+
+window.addEventListener("alpine:init", () => {
+  Alpine.data("themeCtrl", () => ({
+    theme: localStorage.getItem("theme") || "light",
+    init() {
+      document.body.setAttribute("data-theme", this.theme);
+    },
+    toggle() {
+      this.theme = this.theme === "light" ? "dark" : "light";
+      document.body.setAttribute("data-theme", this.theme);
+      localStorage.setItem("theme", this.theme);
+    },
+  }));
+});
