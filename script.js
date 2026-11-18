@@ -37,7 +37,6 @@ const photoPreview = document.getElementById("photoPreview");
 const profileNama = document.getElementById("profileNama");
 const profilePosisi = document.getElementById("profilePosisi");
 const profileInstansi = document.getElementById("profileInstansi");
-const profileNip = document.getElementById("profileNip");
 const saveProfileBtn = document.getElementById("saveProfile");
 
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -86,7 +85,6 @@ function loadProfile() {
     if (profileNama) profileNama.value = p.nama || "";
     if (profilePosisi) profilePosisi.value = p.posisi || "";
     if (profileInstansi) profileInstansi.value = p.instansi || "";
-    if (profileNip) profileNip.value = p.nip || "";
   } catch (e) { /* abaikan */ }
 }
 
@@ -96,7 +94,6 @@ if (saveProfileBtn) {
       nama: profileNama ? profileNama.value.trim() : "",
       posisi: profilePosisi ? profilePosisi.value.trim() : "",
       instansi: profileInstansi ? profileInstansi.value.trim() : "",
-      nip: profileNip ? profileNip.value.trim() : "",
     }));
     updatePrintPreview();
     showSaved();
@@ -566,7 +563,6 @@ function renderPrintDoc() {
         <p>Pelaksana Tugas,</p>
         <p class="sign-name">${escapeHtml(p.nama || "..............................")}</p>
         <p>${escapeHtml(p.posisi || "")}</p>
-        <p>NIP. ${escapeHtml(p.nip || "..............................")}</p>
       </div>
     </div>`;
 }
