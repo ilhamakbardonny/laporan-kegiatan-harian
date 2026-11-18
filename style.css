@@ -386,11 +386,12 @@ body[data-theme="dark"] .btn-outline:hover {
   border: 1px solid var(--border);
   border-radius: 6px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  width: 210mm;
-  max-width: 100%;
+  width: 100%;
+  max-width: 210mm;
   margin: 0 auto;
   padding: 18mm 16mm;
   box-sizing: border-box;
+  overflow-x: auto;
 }
 
 .print-doc {
@@ -441,6 +442,8 @@ body[data-theme="dark"] .btn-outline:hover {
   padding: 6pt 7pt;
   vertical-align: top;
   font-size: 11pt;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .print-table thead th {
@@ -467,6 +470,7 @@ body[data-theme="dark"] .btn-outline:hover {
   text-align: right;
   margin-top: 10mm;
   font-size: 12pt;
+  page-break-inside: avoid;
 }
 
 .print-sign p {
@@ -518,4 +522,25 @@ body[data-theme="dark"] .btn-outline:hover {
   font-weight: normal !important;
   font-size: 10pt !important;
   margin-top: 3pt !important;
+}
+
+@media (max-width: 768px) {
+  .print-paper {
+    padding: 8mm 5mm;
+  }
+
+  .print-doc {
+    font-size: 10pt;
+  }
+
+  .print-table th,
+  .print-table td {
+    font-size: 9pt;
+    padding: 4pt 4pt;
+  }
+
+  .print-doc-img {
+    max-width: 60px;
+    max-height: 50px;
+  }
 }
