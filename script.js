@@ -398,7 +398,7 @@ function importData(file) {
 
 function initCharts() {
   const ctx = document.getElementById("statusChart");
-  if (!ctx || typeof Chart === "undefined") return;
+  if (!ctx || typeof Chart === "undefined" || statusChart) return;
 
   const isDark = document.body.getAttribute("data-theme") === "dark";
   statusChart = new Chart(ctx, {
@@ -636,6 +636,8 @@ if ("serviceWorker" in navigator) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  initCharts();
+  initGSAP();
   if (typeof AOS !== "undefined") {
     AOS.init({
       duration: 800,

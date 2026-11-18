@@ -1,4 +1,4 @@
-const CACHE_NAME = "laporan-kegiatan-v3";
+const CACHE_NAME = "laporan-kegiatan-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -13,7 +13,6 @@ const ASSETS = [
   "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js",
   "https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js",
   "https://cdn.jsdelivr.net/npm/sweetalert2@11",
-  "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js",
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ];
 
