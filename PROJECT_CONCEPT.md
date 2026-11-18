@@ -103,3 +103,20 @@ Setiap laporan memiliki struktur:
   - Service worker v2: precache aset CDN (Bootstrap, Alpine, Chart.js, dll) agar offline benar-benar jalan; instalasi cache toleran gagal per-aset.
   - `manifest.json`: ikon lokal `icon.svg`, theme_color disamakan dengan meta (#6366f1).
   - Hapus file sampah `nul`; hapus referensi `description` yang sudah tidak dipakai.
+- v0.4.0 (2026-11-18): Fitur & perbaikan besar:
+  - Dark mode diperbaiki (themeCtrl Alpine → vanilla JS).
+  - Kolom Dokumentasi menampilkan thumbnail foto dengan benar.
+  - Filter bulan kini meng-update statistik & chart; chart difilter per bulan & terisi saat load.
+  - Tombol Cetak menghasilkan dokumen "Lembar Kegiatan" formal (bukan tabel aplikasi).
+  - Identitas Pelapor (Nama/Posisi/Instansi) tersimpan di localStorage, dipakai di kop & tanda tangan cetak.
+  - Preview Lembar Kegiatan live di bawah daftar laporan (ikut filter aktif).
+  - Kop resmi Kementerian (logo.png diekstrak dari docx referensi) di atas judul.
+  - Format cetak: 1 baris per tanggal, kegiatan bernomor berlanjut, urutan terbaru dulu, font Times New Roman, A4.
+  - Tanggal input bisa diedit & mengikuti bulan filter (min/max dibatasi bulan tsb).
+  - Fitur Import dihapus (hanya Export/backup JSON tersisa).
+  - Section Statistik (chart donut) & kartu statistik Hero dihapus.
+  - Alpine.js & Chart.js dihapus (dependency berkurang); init chart/animasi langsung di DOMContentLoaded.
+  - Service worker v6: network-first + precache CDN & aset lokal.
+  - Perbaikan bug: empty state ganda, preview foto kosong, favicon 404, Lottie 403 (dihapus).
+  - Fix CSS: media query tak tertutup menyebabkan dokumen tampil dobel (penyebab "berantakan").
+  - Animasi: reveal-on-scroll semua elemen (berulang), tap/pop tombol, hover lift, animasi details Identitas, transisi ikon tema & empty state.
