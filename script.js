@@ -26,10 +26,6 @@ const exportBtn = document.getElementById("exportBtn");
 const importBtn = document.getElementById("importBtn");
 const importFile = document.getElementById("importFile");
 
-const statTotal = document.getElementById("statTotal");
-const statSelesai = document.getElementById("statSelesai");
-const statProses = document.getElementById("statProses");
-const statTertunda = document.getElementById("statTertunda");
 
 const photoInput = document.getElementById("photo");
 const photoPreview = document.getElementById("photoPreview");
@@ -122,7 +118,6 @@ function syncDateWithMonthFilter() {
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   renderReports();
-  updateStats();
   showSaved();
 }
 
@@ -134,13 +129,6 @@ function escapeHtml(text) {
 
 function getStatusColorClass(status) {
   return `status-${status}`;
-}
-
-function getMonthFiltered() {
-  const monthFilter = filterMonth ? filterMonth.value : "";
-  return monthFilter
-    ? reports.filter((r) => (r.date || "").slice(0, 7) === monthFilter)
-    : reports;
 }
 
 function getFilteredReports() {
@@ -196,14 +184,6 @@ function renderReports() {
     `;
     tbody.appendChild(tr);
   });
-}
-
-function updateStats() {
-  const data = getMonthFiltered();
-  statTotal.textContent = data.length;
-  statSelesai.textContent = data.filter((r) => r.status === "Selesai").length;
-  statProses.textContent = data.filter((r) => r.status === "Proses").length;
-  statTertunda.textContent = data.filter((r) => r.status === "Tertunda").length;
 }
 
 function resetForm() {
@@ -392,14 +372,6 @@ function importData(file) {
 function initGSAP() {
   if (typeof gsap === "undefined") return;
 
-  gsap.from(".stat-card", {
-    duration: 0.8,
-    y: 30,
-    opacity: 0,
-    stagger: 0.15,
-    ease: "power3.out",
-  });
-
   gsap.from(".card-body", {
     duration: 0.8,
     y: 30,
@@ -522,8 +494,7 @@ if (filterMonth) {
   filterMonth.addEventListener("change", () => {
     syncDateWithMonthFilter();
     renderReports();
-    updateStats();
-  });
+    });
 }
 
 if (printBtn) {
@@ -557,7 +528,6 @@ setToday();
 syncDateWithMonthFilter();
 updatePhotoPreview();
 renderReports();
-updateStats();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
