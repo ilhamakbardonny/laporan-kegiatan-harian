@@ -538,24 +538,6 @@ body[data-theme="dark"] .btn-outline:hover {
   }
 }
 
-.print-kop {
-  text-align: center;
-  margin-bottom: 10pt;
-}
-
-.print-kop p {
-  margin: 0;
-  font-weight: bold;
-  font-size: 12pt;
-  letter-spacing: 0.5pt;
-}
-
-.print-kop-addr {
-  font-weight: normal !important;
-  font-size: 10pt !important;
-  margin-top: 3pt !important;
-}
-
 @media (max-width: 768px) {
   .print-paper {
     padding: 8mm 5mm;

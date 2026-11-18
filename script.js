@@ -446,10 +446,6 @@ function renderPrintDoc() {
     <div class="print-doc">
       <div class="print-kop">
         <img src="logo.png" class="print-kop-logo" alt="Logo Kementerian Pekerjaan Umum" />
-        <p>KEMENTERIAN PEKERJAAN UMUM</p>
-        <p>DIREKTORAT JENDERAL CIPTA KARYA</p>
-        <p>BALAI PENATAAN BANGUNAN PRASARANA DAN KAWASAN BENGKULU</p>
-        <p class="print-kop-addr">Gedung PIP2B Jalan Pangeran Natadirja KM 7 Bengkulu, 38114 Tel/Fax : (0736) 28294</p>
       </div>
       <h2 class="print-title">LEMBAR KEGIATAN</h2>
       <table class="print-info">
