@@ -41,7 +41,6 @@ const saveProfileBtn = document.getElementById("saveProfile");
 
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let editingId = null;
-let statusChart = null;
 let selectedPhoto = null;
 
 function showSaved() {
@@ -69,7 +68,6 @@ if (themeToggle) {
   themeToggle.addEventListener("click", () => {
     const current = document.body.getAttribute("data-theme") || "light";
     applyTheme(current === "dark" ? "light" : "dark");
-    updateCharts();
   });
 }
 
@@ -125,7 +123,6 @@ function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   renderReports();
   updateStats();
-  updateCharts();
   showSaved();
 }
 
@@ -396,65 +393,6 @@ function importData(file) {
   reader.readAsText(file);
 }
 
-function initCharts() {
-  const ctx = document.getElementById("statusChart");
-  if (!ctx || typeof Chart === "undefined" || statusChart) return;
-
-  const isDark = document.body.getAttribute("data-theme") === "dark";
-  statusChart = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: ["Selesai", "Proses", "Tertunda"],
-      datasets: [{
-        data: [0, 0, 0],
-        backgroundColor: ["#16a34a", "#ca8a04", "#dc2626"],
-        borderColor: ["#fff", "#fff", "#fff"],
-        borderWidth: 3,
-        hoverOffset: 20,
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            color: isDark ? "#94a3b8" : "#64748b",
-            font: { family: "Inter", size: 12 },
-            padding: 20,
-          },
-        },
-        tooltip: {
-          backgroundColor: isDark ? "#1e293b" : "#fff",
-          titleColor: isDark ? "#f8fafc" : "#0f172a",
-          bodyColor: isDark ? "#94a3b8" : "#64748b",
-        },
-      },
-      cutout: "70%",
-    },
-  });
-  updateCharts();
-}
-
-function updateCharts() {
-  if (!statusChart) return;
-
-  const isDark = document.body.getAttribute("data-theme") === "dark";
-  statusChart.options.plugins.legend.labels.color = isDark ? "#94a3b8" : "#64748b";
-  statusChart.options.plugins.tooltip.backgroundColor = isDark ? "#1e293b" : "#fff";
-  statusChart.options.plugins.tooltip.titleColor = isDark ? "#f8fafc" : "#0f172a";
-  statusChart.options.plugins.tooltip.bodyColor = isDark ? "#94a3b8" : "#64748b";
-
-  const data = getMonthFiltered();
-  const selesai = data.filter((r) => r.status === "Selesai").length;
-  const proses = data.filter((r) => r.status === "Proses").length;
-  const tertunda = data.filter((r) => r.status === "Tertunda").length;
-
-  statusChart.data.datasets[0].data = [selesai, proses, tertunda];
-  statusChart.update();
-}
-
 function initGSAP() {
   if (typeof gsap === "undefined") return;
 
@@ -589,7 +527,6 @@ if (filterMonth) {
     syncDateWithMonthFilter();
     renderReports();
     updateStats();
-    updateCharts();
   });
 }
 
@@ -625,7 +562,6 @@ syncDateWithMonthFilter();
 updatePhotoPreview();
 renderReports();
 updateStats();
-updateCharts();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -636,7 +572,6 @@ if ("serviceWorker" in navigator) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  initCharts();
   initGSAP();
   if (typeof AOS !== "undefined") {
     AOS.init({

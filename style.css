@@ -340,13 +340,6 @@ body[data-theme="dark"] .btn-outline:hover {
   background: var(--primary-light);
 }
 
-/* Chart container */
-.chart-container {
-  position: relative;
-  height: 280px;
-  width: 100%;
-}
-
 .lottie-bg {
   z-index: 0;
 }
@@ -443,10 +436,6 @@ body[data-theme="dark"] .btn-outline:hover {
 
   .action-group .btn {
     width: 100%;
-  }
-
-  .chart-container {
-    height: 240px;
   }
 }
 
