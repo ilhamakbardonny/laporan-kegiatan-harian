@@ -15,6 +15,7 @@ const themeToggle = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 const printBtn = document.getElementById("printBtn");
 const printArea = document.getElementById("printArea");
+const printPreview = document.getElementById("printPreview");
 
 const searchInput = document.getElementById("searchInput");
 const filterStatus = document.getElementById("filterStatus");
@@ -94,6 +95,7 @@ if (saveProfileBtn) {
       posisi: profilePosisi ? profilePosisi.value.trim() : "",
       instansi: profileInstansi ? profileInstansi.value.trim() : "",
     }));
+    updatePrintPreview();
     showSaved();
   });
 }
@@ -164,6 +166,7 @@ function getFilteredReports() {
 }
 
 function renderReports() {
+  updatePrintPreview();
   tbody.innerHTML = "";
 
   const sorted = getFilteredReports();
@@ -487,7 +490,7 @@ function formatMonthYearID(dateStr) {
   return d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 }
 
-function buildPrintArea() {
+function renderPrintDoc() {
   const data = getFilteredReports().slice().reverse(); // kronologis (lama → baru)
 
   const groups = {};
@@ -530,7 +533,7 @@ function buildPrintArea() {
       </tr>`;
   }).join("");
 
-  printArea.innerHTML = `
+  return `
     <div class="print-doc">
       <h2 class="print-title">LEMBAR KEGIATAN</h2>
       <table class="print-info">
@@ -561,6 +564,12 @@ function buildPrintArea() {
     </div>`;
 }
 
+function updatePrintPreview() {
+  const html = renderPrintDoc();
+  if (printArea) printArea.innerHTML = html;
+  if (printPreview) printPreview.innerHTML = html;
+}
+
 form.addEventListener("submit", addOrUpdateReport);
 cancelEditBtn.addEventListener("click", resetForm);
 toggleFormBtn.addEventListener("click", resetForm);
@@ -578,7 +587,7 @@ if (filterMonth) {
 
 if (printBtn) {
   printBtn.addEventListener("click", () => {
-    buildPrintArea();
+    updatePrintPreview();
     window.print();
   });
 }
