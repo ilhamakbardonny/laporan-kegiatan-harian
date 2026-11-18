@@ -1,4 +1,4 @@
-const CACHE_NAME = "laporan-kegiatan-v2";
+const CACHE_NAME = "laporan-kegiatan-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -28,10 +28,15 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) return response;
-      return fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
 
