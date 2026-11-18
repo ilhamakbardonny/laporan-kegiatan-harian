@@ -538,7 +538,12 @@ function renderPrintDoc() {
 
   return `
     <div class="print-doc">
-      <div class="print-instansi">${escapeHtml((p.instansi || "..............................").toUpperCase())}</div>
+      <div class="print-kop">
+        <p>KEMENTERIAN PEKERJAAN UMUM</p>
+        <p>DIREKTORAT JENDERAL CIPTA KARYA</p>
+        <p>BALAI PENATAAN BANGUNAN PRASARANA DAN KAWASAN BENGKULU</p>
+        <p class="print-kop-addr">Gedung PIP2B Jalan Pangeran Natadirja KM 7 Bengkulu, 38114 Tel/Fax : (0736) 28294</p>
+      </div>
       <h2 class="print-title">LEMBAR KEGIATAN</h2>
       <table class="print-info">
         <tr><td>Nama</td><td>:</td><td>${escapeHtml(p.nama || "..............................")}</td></tr>
