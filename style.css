@@ -312,10 +312,6 @@ body[data-theme="dark"] .btn-outline:hover {
   background: var(--primary-light);
 }
 
-.lottie-bg {
-  z-index: 0;
-}
-
 /* Animations */
 @keyframes popIn {
   0% { transform: scale(0.85); opacity: 0; }
