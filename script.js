@@ -491,7 +491,7 @@ function formatMonthYearID(dateStr) {
 }
 
 function renderPrintDoc() {
-  const data = getFilteredReports().slice().reverse(); // kronologis (lama → baru)
+  const data = getFilteredReports(); // terbaru → terlama (sama seperti tabel aplikasi)
 
   const groups = {};
   data.forEach((r) => {
