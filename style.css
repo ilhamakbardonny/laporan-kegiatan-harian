@@ -706,3 +706,104 @@ details[open] .btn {
     opacity: 0;
   }
 }
+
+/* ===== Mini Stats ===== */
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.mini-stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.mini-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.mini-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.mini-selesai .mini-value { color: var(--success); }
+.mini-proses .mini-value { color: var(--warning); }
+.mini-tertunda .mini-value { color: var(--danger); }
+
+.mini-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ===== Skeleton ===== */
+.skel {
+  display: inline-block;
+  height: 14px;
+  width: 70%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--primary-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.2s infinite;
+}
+
+.skel-sm { width: 30%; height: 12px; }
+.skel-badge { width: 60px; height: 22px; border-radius: 999px; }
+.skel-btn { width: 70px; height: 26px; border-radius: 8px; }
+
+@keyframes skelShimmer {
+  to { background-position: -200% 0; }
+}
+
+/* ===== Empty state ===== */
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ===== Accent picker ===== */
+.accent-picker {
+  cursor: pointer;
+  appearance: none;
+  padding-right: 0.5rem;
+}
+
+/* ===== Toast ===== */
+.saved-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saved-badge::before {
+  content: "✓";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .mini-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

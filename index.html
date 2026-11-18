@@ -24,14 +24,42 @@
       </div>
       <div class="header-actions d-flex align-items-center gap-2 no-print">
         <button class="btn btn-ghost btn-sm" id="exportBtn" title="Export Data">Export</button>
+        <select id="accentPicker" class="btn btn-ghost btn-sm accent-picker" title="Warna Aksen">
+          <option value="#6366f1">Indigo</option>
+          <option value="#10b981">Emerald</option>
+          <option value="#f43f5e">Rose</option>
+          <option value="#f59e0b">Amber</option>
+          <option value="#0ea5e9">Sky</option>
+        </select>
         <button class="btn btn-ghost btn-sm" id="themeToggle" title="Ganti Tema">
           <span id="themeIcon">🌙</span>
         </button>
+        <button class="btn btn-ghost btn-sm" id="installBtn" style="display:none" title="Install App">⬇ Install</button>
       </div>
     </div>
   </header>
 
   <main class="container py-4 position-relative z-3">
+    <!-- Mini Stats -->
+    <section class="mini-stats no-print" id="miniStats">
+      <div class="mini-stat reveal-anim">
+        <span class="mini-value" id="msTotal">0</span>
+        <span class="mini-label">Total</span>
+      </div>
+      <div class="mini-stat mini-selesai reveal-anim">
+        <span class="mini-value" id="msSelesai">0</span>
+        <span class="mini-label">Selesai</span>
+      </div>
+      <div class="mini-stat mini-proses reveal-anim">
+        <span class="mini-value" id="msProses">0</span>
+        <span class="mini-label">Proses</span>
+      </div>
+      <div class="mini-stat mini-tertunda reveal-anim">
+        <span class="mini-value" id="msTertunda">0</span>
+        <span class="mini-label">Tertunda</span>
+      </div>
+    </section>
+
     <!-- Identity Section -->
     <section class="card mb-4 border-0 shadow-sm no-print" data-aos="fade-up" data-aos-duration="800">
       <div class="card-body p-3">
@@ -131,14 +159,23 @@
           </table>
         </div>
         <div id="emptyState" class="empty-state text-center py-5 border rounded-3" style="display:none">
-          <p class="text-muted fw-medium">Tidak ada laporan yang cocok.</p>
+          <div class="empty-icon">🗂️</div>
+          <p class="text-muted fw-medium mb-1">Belum ada laporan yang cocok.</p>
+          <p class="text-muted small mb-3">Mulai catat kegiatan harianmu sekarang.</p>
+          <button class="btn btn-indigo btn-sm" id="emptyAddBtn">+ Tambah Laporan</button>
         </div>
       </div>
     </section>
     <!-- Print Preview Section -->
     <section class="card mt-4 border-0 shadow-sm no-print" data-aos="fade-up" data-aos-duration="800">
       <div class="card-body p-4">
-        <h2 class="h5 mb-3 fw-bold">Preview Lembar Kegiatan</h2>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h2 class="h5 mb-1 fw-bold">Preview Lembar Kegiatan</h2>
+            <p class="text-muted small mb-0" id="previewSummary"></p>
+          </div>
+          <button class="btn btn-ghost btn-sm no-print" id="printBtn2">🖨 Cetak</button>
+        </div>
         <div class="print-paper">
           <div id="printPreview"></div>
         </div>

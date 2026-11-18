@@ -16,6 +16,15 @@ const themeIcon = document.getElementById("themeIcon");
 const printBtn = document.getElementById("printBtn");
 const printArea = document.getElementById("printArea");
 const printPreview = document.getElementById("printPreview");
+const printBtn2 = document.getElementById("printBtn2");
+const previewSummary = document.getElementById("previewSummary");
+const accentPicker = document.getElementById("accentPicker");
+const installBtn = document.getElementById("installBtn");
+const emptyAddBtn = document.getElementById("emptyAddBtn");
+const msTotal = document.getElementById("msTotal");
+const msSelesai = document.getElementById("msSelesai");
+const msProses = document.getElementById("msProses");
+const msTertunda = document.getElementById("msTertunda");
 
 const searchInput = document.getElementById("searchInput");
 const filterStatus = document.getElementById("filterStatus");
@@ -149,6 +158,38 @@ function getFilteredReports() {
   return [...filtered].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 }
 
+function getMonthFiltered() {
+  const monthFilter = filterMonth ? filterMonth.value : "";
+  return monthFilter
+    ? reports.filter((r) => (r.date || "").slice(0, 7) === monthFilter)
+    : reports;
+}
+
+function updateMiniStats() {
+  const data = getMonthFiltered();
+  if (msTotal) msTotal.textContent = data.length;
+  if (msSelesai) msSelesai.textContent = data.filter((r) => r.status === "Selesai").length;
+  if (msProses) msProses.textContent = data.filter((r) => r.status === "Proses").length;
+  if (msTertunda) msTertunda.textContent = data.filter((r) => r.status === "Tertunda").length;
+}
+
+function relDate(dateStr) {
+  if (!dateStr) return "-";
+  const today = new Date().toISOString().slice(0, 10);
+  const d = new Date(dateStr + "T00:00:00");
+  const diff = Math.round((new Date(today + "T00:00:00") - d) / 86400000);
+  if (diff === 0) return "Hari ini";
+  if (diff === 1) return "Kemarin";
+  if (diff > 1 && diff < 30) return diff + " hari lalu";
+  return formatDateID(dateStr);
+}
+
+function showSkeleton() {
+  tbody.innerHTML = Array.from({ length: 5 }, () =>
+    `<tr><td><span class="skel skel-sm"></span></td><td><span class="skel"></span></td><td><span class="skel skel-sm"></span></td><td><span class="skel skel-badge"></span></td><td><span class="skel skel-btn"></span></td></tr>`
+  ).join("");
+}
+
 function renderReports() {
   updatePrintPreview();
   tbody.innerHTML = "";
@@ -170,7 +211,7 @@ function renderReports() {
       ? `<img src="${escapeHtml(report.photo)}" alt="Dokumentasi" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" />`
       : "-";
     tr.innerHTML = `
-      <td>${escapeHtml(report.date)}</td>
+      <td><span title="${escapeHtml(formatDateID(report.date))}">${escapeHtml(relDate(report.date))}</span></td>
       <td><strong>${escapeHtml(report.activity)}</strong></td>
       <td>${docCell}</td>
       <td><span class="status-badge ${getStatusColorClass(report.status)}">${escapeHtml(report.status)}</span></td>
@@ -447,6 +488,11 @@ function updatePrintPreview() {
   const html = renderPrintDoc();
   if (printArea) printArea.innerHTML = html;
   if (printPreview) printPreview.innerHTML = html;
+  if (previewSummary) {
+    const n = getFilteredReports().length;
+    const periode = filterMonth && filterMonth.value ? formatMonthYearID(filterMonth.value + "-01") : "Semua periode";
+    previewSummary.textContent = n + " kegiatan • " + periode;
+  }
   observePrintParts();
 }
 
@@ -483,6 +529,51 @@ photoInput.addEventListener("change", (e) => {
 });
 
 exportBtn.addEventListener("click", exportData);
+
+if (printBtn2) printBtn2.addEventListener("click", () => {
+  updatePrintPreview();
+  window.print();
+});
+
+if (emptyAddBtn) {
+  emptyAddBtn.addEventListener("click", () => {
+    document.getElementById("reportForm").scrollIntoView({ behavior: "smooth" });
+    activityInput.focus();
+  });
+}
+
+const ACCENTS = { "#6366f1": ["#4f46e5", "#eef2ff"], "#10b981": ["#059669", "#d1fae5"], "#f43f5e": ["#e11d48", "#ffe4e6"], "#f59e0b": ["#d97706", "#fef3c7"], "#0ea5e9": ["#0284c7", "#e0f2fe"] };
+function applyAccent(color) {
+  const set = ACCENTS[color] || ACCENTS["#6366f1"];
+  document.body.style.setProperty("--primary", color);
+  document.body.style.setProperty("--primary-hover", set[0]);
+  document.body.style.setProperty("--primary-light", set[1]);
+}
+if (accentPicker) {
+  const savedAccent = localStorage.getItem("accent") || "#6366f1";
+  accentPicker.value = savedAccent;
+  applyAccent(savedAccent);
+  accentPicker.addEventListener("change", () => {
+    localStorage.setItem("accent", accentPicker.value);
+    applyAccent(accentPicker.value);
+  });
+}
+
+let deferredInstall = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  if (installBtn) installBtn.style.display = "";
+});
+if (installBtn) {
+  installBtn.addEventListener("click", async () => {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    await deferredInstall.userChoice;
+    deferredInstall = null;
+    installBtn.style.display = "none";
+  });
+}
 
 loadProfile();
 setToday();
