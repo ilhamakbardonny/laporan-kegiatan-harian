@@ -445,6 +445,7 @@ function renderPrintDoc() {
   return `
     <div class="print-doc">
       <div class="print-kop">
+        <img src="logo.png" class="print-kop-logo" alt="Logo Kementerian Pekerjaan Umum" />
         <p>KEMENTERIAN PEKERJAAN UMUM</p>
         <p>DIREKTORAT JENDERAL CIPTA KARYA</p>
         <p>BALAI PENATAAN BANGUNAN PRASARANA DAN KAWASAN BENGKULU</p>

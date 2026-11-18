@@ -1,4 +1,4 @@
-const CACHE_NAME = "laporan-kegiatan-v5";
+const CACHE_NAME = "laporan-kegiatan-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./script.js",
   "./manifest.json",
   "./icon.svg",
+  "./logo.png",
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
   "https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css",

@@ -576,3 +576,10 @@ body[data-theme="dark"] .btn-outline:hover {
     max-height: 50px;
   }
 }
+
+.print-kop-logo {
+  display: block;
+  height: 60px;
+  width: auto;
+  margin: 0 auto 8pt;
+}
