@@ -459,12 +459,18 @@ function renderPrintDoc() {
         <tr><td>Tahun</td><td>:</td><td>${escapeHtml(tahun)}</td></tr>
       </table>
       <table class="print-table">
+        <colgroup>
+          <col style="width:6%" />
+          <col style="width:16%" />
+          <col />
+          <col style="width:22%" />
+        </colgroup>
         <thead>
           <tr>
-            <th style="width:6%">NO</th>
-            <th style="width:16%">TANGGAL</th>
+            <th>NO</th>
+            <th>TANGGAL</th>
             <th>KEGIATAN YANG DILAKUKAN</th>
-            <th style="width:22%">DOKUMENTASI</th>
+            <th>DOKUMENTASI</th>
           </tr>
         </thead>
         <tbody>${rows || `<tr><td colspan="4" class="c">Tidak ada data.</td></tr>`}</tbody>
