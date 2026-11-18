@@ -26,12 +26,11 @@
         <span class="brand-icon">📋</span>
         <span class="fw-bold fs-5">Laporan Harian</span>
       </div>
-      <div class="header-actions d-flex align-items-center gap-2">
+      <div class="header-actions d-flex align-items-center gap-2 no-print">
         <button class="btn btn-ghost btn-sm" id="exportBtn" title="Export Data">Export</button>
         <button class="btn btn-ghost btn-sm" id="importBtn" title="Import Data">Import</button>
-        <button class="btn btn-ghost btn-sm" id="themeToggle" x-data="themeCtrl" x-init="init()" x-on:click="toggle()" title="Ganti Tema">
-          <span x-show="theme === 'light'">🌙</span>
-          <span x-show="theme === 'dark'">☀️</span>
+        <button class="btn btn-ghost btn-sm" id="themeToggle" title="Ganti Tema">
+          <span id="themeIcon">🌙</span>
         </button>
         <input type="file" id="importFile" accept=".json" class="d-none" />
       </div>
@@ -64,7 +63,7 @@
     </section>
 
     <!-- Chart Section -->
-    <section class="card mb-4 border-0 shadow-sm" data-aos="fade-up" data-aos-duration="800">
+    <section class="card mb-4 border-0 shadow-sm no-print" data-aos="fade-up" data-aos-duration="800">
       <div class="card-body p-4">
         <h5 class="fw-bold mb-3">Statistik Laporan per Status</h5>
         <div class="chart-container">
@@ -74,7 +73,7 @@
     </section>
 
     <!-- Form Section -->
-    <section class="card animate__animated animate__fadeIn mb-4 border-0 shadow-sm" data-aos="fade-up" data-aos-duration="800">
+    <section class="card animate__animated animate__fadeIn mb-4 border-0 shadow-sm no-print" data-aos="fade-up" data-aos-duration="800">
       <div class="card-body p-4">
         <div class="card-header d-flex justify-content-between align-items-center mb-3 border-0 bg-transparent">
           <h2 class="h5 mb-0 fw-bold">Tambah Laporan</h2>
@@ -82,25 +81,28 @@
         </div>
         <form id="reportForm" class="row g-3">
           <input type="hidden" id="editId" />
-          <div class="col-md-4 form-group">
+          <div class="col-md-3 form-group">
             <label for="date" class="form-label fw-semibold">Tanggal</label>
-            <input type="date" class="form-control form-control-sm" id="date" required />
+            <input type="date" class="form-control form-control-sm" id="date" required readonly />
           </div>
           <div class="col-md-4 form-group">
             <label for="activity" class="form-label fw-semibold">Kegiatan</label>
             <input type="text" class="form-control form-control-sm" id="activity" placeholder="Contoh: Rapat tim" required />
           </div>
-          <div class="col-md-4 form-group">
+          <div class="col-md-3 form-group">
+            <label for="photo" class="form-label fw-semibold">Dokumentasi (foto)</label>
+            <input type="file" class="form-control form-control-sm" id="photo" accept="image/*" />
+          </div>
+          <div class="col-md-1 d-flex align-items-end">
+            <img id="photoPreview" src="" alt="Preview" class="rounded-2 border" style="width:60px;height:60px;object-fit:cover;" />
+          </div>
+          <div class="col-md-2 form-group">
             <label for="status" class="form-label fw-semibold">Status</label>
             <select class="form-select form-control-sm" id="status">
               <option value="Selesai">Selesai</option>
               <option value="Proses">Proses</option>
               <option value="Tertunda">Tertunda</option>
             </select>
-          </div>
-          <div class="col-12 form-group">
-            <label for="description" class="form-label fw-semibold">Deskripsi</label>
-            <textarea class="form-control form-control-sm" id="description" rows="3" placeholder="Detail kegiatan..."></textarea>
           </div>
           <div class="col-12 form-actions d-flex gap-2">
             <button type="submit" class="btn btn-indigo flex-fill" id="submitBtn">Simpan</button>
@@ -117,7 +119,7 @@
           <div>
             <h2 class="h5 mb-0 fw-bold">Daftar Laporan</h2>
           </div>
-          <div class="toolbar d-flex gap-2 flex-wrap">
+          <div class="toolbar d-flex gap-2 flex-wrap no-print">
             <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Cari kegiatan..." />
             <select class="form-select form-control-sm" id="filterStatus">
               <option value="">Semua Status</option>
@@ -126,6 +128,8 @@
               <option value="Tertunda">Tertunda</option>
             </select>
             <input type="date" class="form-control form-control-sm" id="filterDate" />
+            <input type="month" class="form-control form-control-sm" id="filterMonth" />
+            <button class="btn btn-ghost btn-sm" id="printBtn" title="Cetak Laporan">Cetak</button>
           </div>
         </div>
         <div class="table-wrap rounded-3 border overflow-hidden" id="reportList">
@@ -134,7 +138,7 @@
               <tr>
                 <th class="fw-semibold text-muted small">Tanggal</th>
                 <th class="fw-semibold text-muted small">Kegiatan</th>
-                <th class="fw-semibold text-muted small">Deskripsi</th>
+                <th class="fw-semibold text-muted small">Dokumentasi</th>
                 <th class="fw-semibold text-muted small">Status</th>
                 <th class="fw-semibold text-muted small text-end">Aksi</th>
               </tr>

@@ -66,13 +66,13 @@ Setiap laporan memiliki struktur:
 ## 8. File dalam Repo
 | File | Fungsi |
 |------|--------|
-| `index.html` | Halaman utama, struktur UI |
-| `style.css` | Gaya custom, overrides Bootstrap, tema gelap |
-| `script.js` | Logika aplikasi (CRUD, filter, export/import, PWA register) |
-| `manifest.json` | Konfigurasi PWA (nama, ikon, warna tema) |
-| `sw.js` | Service worker untuk cache offline |
-| `README.md` | Dokumentasi penggunaan dan deploy |
-| `.gitignore` | File yang diabaikan Git |
+| `index.html` | Halaman utama, struktur UI | ✅ Diperbaiki: field duplikat (activity/photo/photoPreview) dihapus, field Deskripsi ditambahkan, col-md disesuaikan agar total 12 |
+| `style.css` | Gaya custom, overrides Bootstrap, tema gelap | — |
+| `script.js` | Logika aplikasi (CRUD, filter, export/import, PWA register) | — |
+| `manifest.json` | Konfigurasi PWA (nama, ikon, warna tema) | — |
+| `sw.js` | Service worker untuk cache offline | — |
+| `README.md` | Dokumentasi penggunaan dan deploy | — |
+| `.gitignore` | File yang diabaikan Git | — |
 
 ## 9. Batasan
 - Data hanya tersimpan di browser lokal (tidak ada sinkronisasi antar perangkat)
@@ -80,6 +80,26 @@ Setiap laporan memiliki struktur:
 - Untuk data bersama atau multi-user, diperlukan backend dan database
 
 ## 10. Cara Deploy
+
 1. Push ke repo GitHub publik
 2. Aktifkan GitHub Pages di Settings > Pages (branch `main`, folder root)
 3. Situs online di `https://USERNAME.github.io/repo-name/`
+
+## 11. Catatan Perubahan
+
+- v0.1.0 (2026-11-18): Perbaikan bug `index.html` — hapus field duplikat (activity, photo, photoPreview), tambah field Deskripsi (`textarea#description`) yang sebelumnya hilang dari form, susun ulang col-md agar total 12.
+- v0.2.0 (2026-11-18): 
+  - Form input: tanggal diisi otomatis hari ini (readonly), ganti field Deskripsi dengan upload Dokumentasi (foto, pratinjau gambar).
+  - Statistik: tambah filter Bulan, statistik ringkasan dan chart difilter per bulan terpilih.
+  - Tabel: kolom Deskripsi diganti Dokumentasi (menampilkan pratinjau foto).
+- v0.3.0 (2026-11-18): Perbaikan bug & fitur:
+  - Dark mode: ganti Alpine `themeCtrl` (tidak terdefinisi) dengan vanilla JS — toggle tema sekarang berfungsi.
+  - Kolom Dokumentasi: perbaiki rendering thumbnail foto (sebelumnya `<img>` di-escape jadi teks).
+  - Chart donut kini difilter per bulan (sama seperti statistik) dan langsung terisi saat load.
+  - Filter bulan sekarang ikut memperbarui statistik & chart (sebelumnya hanya tabel).
+  - Empty state tidak lagi tampil ganda.
+  - Tombol Cetak di toolbar + CSS `@media print` (sembunyikan form, toolbar, footer, tombol aksi).
+  - Preview foto disembunyikan saat kosong (tidak lagi broken-image).
+  - Service worker v2: precache aset CDN (Bootstrap, Alpine, Chart.js, dll) agar offline benar-benar jalan; instalasi cache toleran gagal per-aset.
+  - `manifest.json`: ikon lokal `icon.svg`, theme_color disamakan dengan meta (#6366f1).
+  - Hapus file sampah `nul`; hapus referensi `description` yang sudah tidak dipakai.

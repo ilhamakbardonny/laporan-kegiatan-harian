@@ -4,18 +4,26 @@ Aplikasi web sederhana untuk manajemen laporan kegiatan harian, dibangun dengan 
 
 ## Fitur
 
-- Tambah laporan kegiatan harian (tanggal, kegiatan, deskripsi, status)
+- Tambah laporan kegiatan harian (tanggal otomatis hari ini, kegiatan, dokumentasi foto, status)
+- Dokumentasi: upload foto dengan pratinjau, tampil sebagai thumbnail di tabel
+- Ubah laporan & hapus laporan (dengan konfirmasi)
 - Daftar laporan diurutkan dari yang terbaru
-- Ubah status: Selesai, Proses, Tertunda
-- Hapus laporan
+- Statistik ringkasan + chart donut per status, difilter per bulan
+- Filter: pencarian teks, status, tanggal, bulan
+- Export & import data (JSON)
+- Cetak laporan (tombol Cetak, tampilan print ramah)
+- Dark mode (preferensi tersimpan)
 - Data tersimpan di browser (localStorage)
+- PWA: installable & offline (service worker)
 - Responsif untuk layar kecil
 
 ## Teknologi
 
 - HTML5
-- CSS3
-- Vanilla JavaScript
+- CSS3 + Bootstrap 5.3.3
+- Vanilla JavaScript + Alpine.js
+- Chart.js, SweetAlert2, GSAP, Animate.css, AOS
+- PWA (Web App Manifest + Service Worker)
 - GitHub Pages (hosting gratis)
 
 ## Cara Menjalankan Secara Lokal

@@ -4,17 +4,20 @@ const form = document.getElementById("reportForm");
 const editIdInput = document.getElementById("editId");
 const dateInput = document.getElementById("date");
 const activityInput = document.getElementById("activity");
-const descriptionInput = document.getElementById("description");
 const statusSelect = document.getElementById("status");
 const submitBtn = document.getElementById("submitBtn");
 const cancelEditBtn = document.getElementById("cancelEdit");
 const toggleFormBtn = document.getElementById("toggleForm");
 const tbody = document.querySelector("#reportList table tbody");
 const emptyState = document.getElementById("emptyState");
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = document.getElementById("themeIcon");
+const printBtn = document.getElementById("printBtn");
 
 const searchInput = document.getElementById("searchInput");
 const filterStatus = document.getElementById("filterStatus");
 const filterDate = document.getElementById("filterDate");
+const filterMonth = document.getElementById("filterMonth");
 
 const exportBtn = document.getElementById("exportBtn");
 const importBtn = document.getElementById("importBtn");
@@ -25,9 +28,13 @@ const statSelesai = document.getElementById("statSelesai");
 const statProses = document.getElementById("statProses");
 const statTertunda = document.getElementById("statTertunda");
 
+const photoInput = document.getElementById("photo");
+const photoPreview = document.getElementById("photoPreview");
+
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let editingId = null;
 let statusChart = null;
+let selectedPhoto = null;
 
 function showSaved() {
   let badge = document.querySelector(".saved-badge");
@@ -44,16 +51,30 @@ function showSaved() {
 function applyTheme(theme) {
   document.body.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
+  if (themeIcon) themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
 }
 
 const savedTheme = localStorage.getItem("theme") || "light";
 applyTheme(savedTheme);
 
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const current = document.body.getAttribute("data-theme") || "light";
+    applyTheme(current === "dark" ? "light" : "dark");
+    updateCharts();
+  });
+}
+
+function updatePhotoPreview() {
+  if (photoPreview) {
+    photoPreview.style.display = selectedPhoto ? "" : "none";
+  }
+}
+
 function setToday() {
   const today = new Date().toISOString().split("T")[0];
   dateInput.value = today;
 }
-
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   renderReports();
@@ -72,27 +93,35 @@ function getStatusColorClass(status) {
   return `status-${status}`;
 }
 
+function getMonthFiltered() {
+  const monthFilter = filterMonth ? filterMonth.value : "";
+  return monthFilter
+    ? reports.filter((r) => (r.date || "").slice(0, 7) === monthFilter)
+    : reports;
+}
+
 function renderReports() {
   tbody.innerHTML = "";
 
   const keyword = searchInput.value.toLowerCase().trim();
   const statusFilter = filterStatus.value;
   const dateFilter = filterDate.value;
+  const monthFilter = filterMonth ? filterMonth.value : "";
 
   const filtered = reports.filter((r) => {
     const matchSearch =
-      r.activity.toLowerCase().includes(keyword) ||
+      (r.activity || "").toLowerCase().includes(keyword) ||
       (r.description || "").toLowerCase().includes(keyword);
     const matchStatus = statusFilter ? r.status === statusFilter : true;
     const matchDate = dateFilter ? r.date === dateFilter : true;
-    return matchSearch && matchStatus && matchDate;
+    const matchMonth = monthFilter ? (r.date || "").slice(0, 7) === monthFilter : true;
+    return matchSearch && matchStatus && matchDate && matchMonth;
   });
 
-  const sorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sorted = [...filtered].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   if (sorted.length === 0) {
     emptyState.style.display = "block";
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Tidak ada laporan yang cocok.</td></tr>`;
     return;
   }
 
@@ -102,10 +131,13 @@ function renderReports() {
     const tr = document.createElement("tr");
     tr.className = "row-added";
     tr.style.animationDelay = `${index * 0.05}s`;
+    const docCell = report.photo
+      ? `<img src="${escapeHtml(report.photo)}" alt="Dokumentasi" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" />`
+      : "-";
     tr.innerHTML = `
       <td>${escapeHtml(report.date)}</td>
       <td><strong>${escapeHtml(report.activity)}</strong></td>
-      <td>${escapeHtml(report.description || "-")}</td>
+      <td>${docCell}</td>
       <td><span class="status-badge ${getStatusColorClass(report.status)}">${escapeHtml(report.status)}</span></td>
       <td>
         <div class="action-group">
@@ -123,16 +155,20 @@ function renderReports() {
 }
 
 function updateStats() {
-  statTotal.textContent = reports.length;
-  statSelesai.textContent = reports.filter((r) => r.status === "Selesai").length;
-  statProses.textContent = reports.filter((r) => r.status === "Proses").length;
-  statTertunda.textContent = reports.filter((r) => r.status === "Tertunda").length;
+  const data = getMonthFiltered();
+  statTotal.textContent = data.length;
+  statSelesai.textContent = data.filter((r) => r.status === "Selesai").length;
+  statProses.textContent = data.filter((r) => r.status === "Proses").length;
+  statTertunda.textContent = data.filter((r) => r.status === "Tertunda").length;
 }
 
 function resetForm() {
   form.reset();
   editIdInput.value = "";
   editingId = null;
+  selectedPhoto = null;
+  photoPreview.src = "";
+  updatePhotoPreview();
   submitBtn.textContent = "Simpan";
   cancelEditBtn.style.display = "none";
   toggleFormBtn.style.display = "none";
@@ -145,7 +181,7 @@ function addOrUpdateReport(e) {
   const reportData = {
     date: dateInput.value,
     activity: activityInput.value.trim(),
-    description: descriptionInput.value.trim(),
+    photo: selectedPhoto || "",
     status: statusSelect.value,
   };
 
@@ -200,7 +236,9 @@ window.editReport = function (id) {
   editIdInput.value = id;
   dateInput.value = report.date;
   activityInput.value = report.activity;
-  descriptionInput.value = report.description || "";
+  selectedPhoto = report.photo || "";
+  photoPreview.src = selectedPhoto ? selectedPhoto : "";
+  updatePhotoPreview();
   statusSelect.value = report.status;
   submitBtn.textContent = "Perbarui";
   cancelEditBtn.style.display = "inline-flex";
@@ -309,8 +347,9 @@ function importData(file) {
 
 function initCharts() {
   const ctx = document.getElementById("statusChart");
-  if (!ctx) return;
+  if (!ctx || typeof Chart === "undefined") return;
 
+  const isDark = document.body.getAttribute("data-theme") === "dark";
   statusChart = new Chart(ctx, {
     type: "doughnut",
     data: {
@@ -330,34 +369,44 @@ function initCharts() {
         legend: {
           position: "bottom",
           labels: {
-            color: document.body.getAttribute("data-theme") === "dark" ? "#94a3b8" : "#64748b",
+            color: isDark ? "#94a3b8" : "#64748b",
             font: { family: "Inter", size: 12 },
             padding: 20,
           },
         },
         tooltip: {
-          backgroundColor: document.body.getAttribute("data-theme") === "dark" ? "#1e293b" : "#fff",
-          titleColor: document.body.getAttribute("data-theme") === "dark" ? "#f8fafc" : "#0f172a",
-          bodyColor: document.body.getAttribute("data-theme") === "dark" ? "#94a3b8" : "#64748b",
+          backgroundColor: isDark ? "#1e293b" : "#fff",
+          titleColor: isDark ? "#f8fafc" : "#0f172a",
+          bodyColor: isDark ? "#94a3b8" : "#64748b",
         },
       },
       cutout: "70%",
     },
   });
+  updateCharts();
 }
 
 function updateCharts() {
   if (!statusChart) return;
 
-  const selesai = reports.filter((r) => r.status === "Selesai").length;
-  const proses = reports.filter((r) => r.status === "Proses").length;
-  const tertunda = reports.filter((r) => r.status === "Tertunda").length;
+  const isDark = document.body.getAttribute("data-theme") === "dark";
+  statusChart.options.plugins.legend.labels.color = isDark ? "#94a3b8" : "#64748b";
+  statusChart.options.plugins.tooltip.backgroundColor = isDark ? "#1e293b" : "#fff";
+  statusChart.options.plugins.tooltip.titleColor = isDark ? "#f8fafc" : "#0f172a";
+  statusChart.options.plugins.tooltip.bodyColor = isDark ? "#94a3b8" : "#64748b";
+
+  const data = getMonthFiltered();
+  const selesai = data.filter((r) => r.status === "Selesai").length;
+  const proses = data.filter((r) => r.status === "Proses").length;
+  const tertunda = data.filter((r) => r.status === "Tertunda").length;
 
   statusChart.data.datasets[0].data = [selesai, proses, tertunda];
   statusChart.update();
 }
 
 function initGSAP() {
+  if (typeof gsap === "undefined") return;
+
   gsap.from(".stat-card", {
     duration: 0.8,
     y: 30,
@@ -382,6 +431,29 @@ toggleFormBtn.addEventListener("click", resetForm);
 searchInput.addEventListener("input", renderReports);
 filterStatus.addEventListener("change", renderReports);
 filterDate.addEventListener("change", renderReports);
+if (filterMonth) {
+  filterMonth.addEventListener("change", () => {
+    renderReports();
+    updateStats();
+    updateCharts();
+  });
+}
+
+if (printBtn) {
+  printBtn.addEventListener("click", () => window.print());
+}
+
+photoInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    selectedPhoto = ev.target.result;
+    photoPreview.src = selectedPhoto;
+    updatePhotoPreview();
+  };
+  reader.readAsDataURL(file);
+});
 
 exportBtn.addEventListener("click", exportData);
 importBtn.addEventListener("click", () => importFile.click());
@@ -391,8 +463,10 @@ importFile.addEventListener("change", (e) => {
 });
 
 setToday();
+updatePhotoPreview();
 renderReports();
 updateStats();
+updateCharts();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

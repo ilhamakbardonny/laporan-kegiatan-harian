@@ -1,16 +1,29 @@
-const CACHE_NAME = "laporan-kegiatan-v1";
+const CACHE_NAME = "laporan-kegiatan-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./script.js",
-  "./manifest.json"
+  "./manifest.json",
+  "./icon.svg",
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
+  "https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css",
+  "https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js",
+  "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js",
+  "https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js",
+  "https://cdn.jsdelivr.net/npm/sweetalert2@11",
+  "https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js",
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(ASSETS.map((url) => cache.add(url)))
+    )
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("fetch", (event) => {
@@ -28,6 +41,6 @@ self.addEventListener("activate", (event) => {
       Promise.all(
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
 });

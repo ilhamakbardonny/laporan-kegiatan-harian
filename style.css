@@ -455,3 +455,38 @@ body[data-theme="dark"] .btn-outline:hover {
     flex: 1 1 100%;
   }
 }
+
+@media print {
+  .no-print,
+  .site-footer,
+  .saved-badge,
+  .action-group {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+  }
+
+  .site-header {
+    background: #fff;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  table th {
+    background: #f1f5f9;
+    color: #000;
+  }
+
+  .status-badge {
+    border: 1px solid currentColor;
+  }
+}
