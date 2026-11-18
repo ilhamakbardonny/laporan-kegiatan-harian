@@ -456,37 +456,93 @@ body[data-theme="dark"] .btn-outline:hover {
   }
 }
 
+
+/* ===== Print: Lembar Kegiatan ===== */
+#printArea {
+  display: none;
+}
+
+.print-doc {
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  font-size: 12pt;
+  line-height: 1.4;
+}
+
+.print-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16pt;
+  margin: 0 0 12pt;
+  text-decoration: underline;
+}
+
+.print-info {
+  border-collapse: collapse;
+  margin-bottom: 14pt;
+}
+
+.print-info td {
+  padding: 1pt 6pt 1pt 0;
+  vertical-align: top;
+}
+
+.print-info td:nth-child(2) {
+  font-weight: bold;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24pt;
+}
+
+.print-table th,
+.print-table td {
+  border: 1pt solid #000;
+  padding: 5pt 6pt;
+  vertical-align: top;
+  font-size: 11pt;
+}
+
+.print-table thead th {
+  text-align: center;
+  background: #f1f1f1;
+}
+
+.print-table .c {
+  text-align: center;
+}
+
+.print-doc-img {
+  max-width: 90px;
+  max-height: 70px;
+  object-fit: cover;
+  border: 1pt solid #999;
+  margin: 0 4pt 4pt 0;
+  display: inline-block;
+}
+
+.print-sign {
+  text-align: right;
+  margin-top: 18pt;
+}
+
+.print-sign p {
+  margin: 0;
+}
+
 @media print {
-  .no-print,
-  .site-footer,
-  .saved-badge,
-  .action-group {
+  body > *:not(#printArea) {
     display: none !important;
+  }
+
+  #printArea {
+    display: block !important;
   }
 
   body {
     background: #fff;
     color: #000;
-  }
-
-  .card {
-    box-shadow: none;
-    border: 1px solid #ddd;
-    break-inside: avoid;
-  }
-
-  .site-header {
-    background: #fff;
-    box-shadow: none;
-    backdrop-filter: none;
-  }
-
-  table th {
-    background: #f1f5f9;
-    color: #000;
-  }
-
-  .status-badge {
-    border: 1px solid currentColor;
   }
 }

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "laporan_kegiatan_harian";
+const PROFILE_KEY = "profil_laporan";
 
 const form = document.getElementById("reportForm");
 const editIdInput = document.getElementById("editId");
@@ -13,6 +14,7 @@ const emptyState = document.getElementById("emptyState");
 const themeToggle = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 const printBtn = document.getElementById("printBtn");
+const printArea = document.getElementById("printArea");
 
 const searchInput = document.getElementById("searchInput");
 const filterStatus = document.getElementById("filterStatus");
@@ -30,6 +32,11 @@ const statTertunda = document.getElementById("statTertunda");
 
 const photoInput = document.getElementById("photo");
 const photoPreview = document.getElementById("photoPreview");
+
+const profileNama = document.getElementById("profileNama");
+const profilePosisi = document.getElementById("profilePosisi");
+const profileInstansi = document.getElementById("profileInstansi");
+const saveProfileBtn = document.getElementById("saveProfile");
 
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let editingId = null;
@@ -71,9 +78,46 @@ function updatePhotoPreview() {
   }
 }
 
+function loadProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {};
+    if (profileNama) profileNama.value = p.nama || "";
+    if (profilePosisi) profilePosisi.value = p.posisi || "";
+    if (profileInstansi) profileInstansi.value = p.instansi || "";
+  } catch (e) { /* abaikan */ }
+}
+
+if (saveProfileBtn) {
+  saveProfileBtn.addEventListener("click", () => {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({
+      nama: profileNama ? profileNama.value.trim() : "",
+      posisi: profilePosisi ? profilePosisi.value.trim() : "",
+      instansi: profileInstansi ? profileInstansi.value.trim() : "",
+    }));
+    showSaved();
+  });
+}
+
 function setToday() {
   const today = new Date().toISOString().split("T")[0];
   dateInput.value = today;
+}
+
+function syncDateWithMonthFilter() {
+  const m = filterMonth ? filterMonth.value : "";
+  if (m) {
+    const [y, mo] = m.split("-").map(Number);
+    const lastDay = new Date(y, mo, 0).getDate();
+    dateInput.min = `${m}-01`;
+    dateInput.max = `${m}-${String(lastDay).padStart(2, "0")}`;
+    if (!dateInput.value || dateInput.value.slice(0, 7) !== m) {
+      dateInput.value = `${m}-01`;
+    }
+  } else {
+    dateInput.removeAttribute("min");
+    dateInput.removeAttribute("max");
+    setToday();
+  }
 }
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
@@ -86,7 +130,7 @@ function save() {
 function escapeHtml(text) {
   const div = document.createElement("div");
   div.textContent = text === null || text === undefined ? "" : text;
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function getStatusColorClass(status) {
@@ -100,9 +144,7 @@ function getMonthFiltered() {
     : reports;
 }
 
-function renderReports() {
-  tbody.innerHTML = "";
-
+function getFilteredReports() {
   const keyword = searchInput.value.toLowerCase().trim();
   const statusFilter = filterStatus.value;
   const dateFilter = filterDate.value;
@@ -118,7 +160,13 @@ function renderReports() {
     return matchSearch && matchStatus && matchDate && matchMonth;
   });
 
-  const sorted = [...filtered].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  return [...filtered].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+}
+
+function renderReports() {
+  tbody.innerHTML = "";
+
+  const sorted = getFilteredReports();
 
   if (sorted.length === 0) {
     emptyState.style.display = "block";
@@ -172,7 +220,7 @@ function resetForm() {
   submitBtn.textContent = "Simpan";
   cancelEditBtn.style.display = "none";
   toggleFormBtn.style.display = "none";
-  setToday();
+  syncDateWithMonthFilter();
 }
 
 function addOrUpdateReport(e) {
@@ -425,6 +473,94 @@ function initGSAP() {
   });
 }
 
+function formatDateID(dateStr) {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr + "T00:00:00");
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function formatMonthYearID(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+}
+
+function buildPrintArea() {
+  const data = getFilteredReports().slice().reverse(); // kronologis (lama → baru)
+
+  const groups = {};
+  data.forEach((r) => {
+    const key = r.date || "-";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+  const dates = Object.keys(groups).sort();
+
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch (e) { /* abaikan */ }
+
+  let periode = formatMonthYearID(new Date().toISOString().slice(0, 10));
+  let tahun = String(new Date().getFullYear());
+  if (filterMonth && filterMonth.value) {
+    periode = formatMonthYearID(filterMonth.value + "-01");
+  } else if (dates.length) {
+    const min = dates[0];
+    const max = dates[dates.length - 1];
+    periode = min === max ? formatMonthYearID(min) : `${formatDateID(min)} – ${formatDateID(max)}`;
+    tahun = max.slice(0, 4);
+  }
+
+  const rows = dates.map((date, i) => {
+    const items = groups[date];
+    const kegiatan = items.map((r) => escapeHtml(r.activity || "")).join("<br>");
+    const docs = items
+      .map((r) => r.photo
+        ? `<img src="${escapeHtml(r.photo)}" class="print-doc-img" alt="Dokumentasi" />`
+        : "")
+      .filter(Boolean)
+      .join(" ");
+    return `
+      <tr>
+        <td class="c">${i + 1}</td>
+        <td>${escapeHtml(formatDateID(date))}</td>
+        <td>${kegiatan}</td>
+        <td class="c">${docs || "-"}</td>
+      </tr>`;
+  }).join("");
+
+  printArea.innerHTML = `
+    <div class="print-doc">
+      <h2 class="print-title">LEMBAR KEGIATAN</h2>
+      <table class="print-info">
+        <tr><td>Nama</td><td>:</td><td>${escapeHtml(p.nama || "..............................")}</td></tr>
+        <tr><td>Posisi</td><td>:</td><td>${escapeHtml(p.posisi || "..............................")}</td></tr>
+        <tr><td>Instansi</td><td>:</td><td>${escapeHtml(p.instansi || "..............................")}</td></tr>
+        <tr><td>Bulan</td><td>:</td><td>${escapeHtml(periode)}</td></tr>
+        <tr><td>Tahun</td><td>:</td><td>${escapeHtml(tahun)}</td></tr>
+      </table>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th style="width:6%">NO</th>
+            <th style="width:16%">TANGGAL</th>
+            <th>KEGIATAN YANG DILAKUKAN</th>
+            <th style="width:22%">DOKUMENTASI</th>
+          </tr>
+        </thead>
+        <tbody>${rows || `<tr><td colspan="4" class="c">Tidak ada data.</td></tr>`}</tbody>
+      </table>
+      <div class="print-sign">
+        <p>Bengkulu, ..............................</p>
+        <p>Pelaksana Tugas</p>
+        <br><br>
+        <p><strong>${escapeHtml(p.nama || "..............................")}</strong></p>
+        <p>${escapeHtml(p.posisi || "")}</p>
+      </div>
+    </div>`;
+}
+
 form.addEventListener("submit", addOrUpdateReport);
 cancelEditBtn.addEventListener("click", resetForm);
 toggleFormBtn.addEventListener("click", resetForm);
@@ -433,6 +569,7 @@ filterStatus.addEventListener("change", renderReports);
 filterDate.addEventListener("change", renderReports);
 if (filterMonth) {
   filterMonth.addEventListener("change", () => {
+    syncDateWithMonthFilter();
     renderReports();
     updateStats();
     updateCharts();
@@ -440,7 +577,10 @@ if (filterMonth) {
 }
 
 if (printBtn) {
-  printBtn.addEventListener("click", () => window.print());
+  printBtn.addEventListener("click", () => {
+    buildPrintArea();
+    window.print();
+  });
 }
 
 photoInput.addEventListener("change", (e) => {
@@ -462,7 +602,9 @@ importFile.addEventListener("change", (e) => {
   e.target.value = "";
 });
 
+loadProfile();
 setToday();
+syncDateWithMonthFilter();
 updatePhotoPreview();
 renderReports();
 updateStats();
