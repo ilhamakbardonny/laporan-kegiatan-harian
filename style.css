@@ -620,3 +620,33 @@ body[data-theme="dark"] .btn-outline:hover {
 #themeToggle:hover #themeIcon {
   transform: rotate(20deg) scale(1.15);
 }
+
+/* ===== Reveal saat scroll ===== */
+.print-kop,
+.print-title,
+.print-info,
+.print-table,
+.print-sign {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.print-kop.reveal,
+.print-title.reveal,
+.print-info.reveal,
+.print-table.reveal,
+.print-sign.reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.print-table.reveal tbody tr {
+  animation: fadeSlide 0.35s ease backwards;
+}
+
+.print-table.reveal tbody tr:nth-child(2) { animation-delay: 0.05s; }
+.print-table.reveal tbody tr:nth-child(3) { animation-delay: 0.1s; }
+.print-table.reveal tbody tr:nth-child(4) { animation-delay: 0.15s; }
+.print-table.reveal tbody tr:nth-child(5) { animation-delay: 0.2s; }
+.print-table.reveal tbody tr:nth-child(n+6) { animation-delay: 0.25s; }

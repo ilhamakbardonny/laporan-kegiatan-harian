@@ -508,3 +508,16 @@ document.addEventListener("click", (e) => {
   void btn.offsetWidth;
   btn.classList.add("btn-tap");
 });
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("reveal");
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll(".print-kop, .print-title, .print-info, .print-table, .print-sign").forEach((el) => {
+  revealObserver.observe(el);
+});
