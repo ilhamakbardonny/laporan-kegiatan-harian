@@ -643,7 +643,7 @@ revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15 });
 
-document.querySelectorAll(".card-body > *, .toolbar, .site-footer, .header-inner > *").forEach((el) => {
+document.querySelectorAll(".card-body > *, .toolbar, .site-footer, .header-inner > *, .mini-stat").forEach((el) => {
   if (el.getClientRects().length === 0) return;
   el.classList.add("reveal-anim");
   revealObserver.observe(el);
