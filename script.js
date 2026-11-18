@@ -515,9 +515,12 @@ function renderPrintDoc() {
     tahun = max.slice(0, 4);
   }
 
+  let kegiatanNo = 0;
   const rows = dates.map((date, i) => {
     const items = groups[date];
-    const kegiatan = items.map((r) => escapeHtml(r.activity || "")).join("<br>");
+    const kegiatan = items
+      .map((r) => `${++kegiatanNo}. ${escapeHtml(r.activity || "")}`)
+      .join("<br>");
     const docs = items
       .map((r) => r.photo
         ? `<img src="${escapeHtml(r.photo)}" class="print-doc-img" alt="Dokumentasi" />`
