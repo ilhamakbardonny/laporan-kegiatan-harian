@@ -493,7 +493,13 @@ function formatMonthYearID(dateStr) {
 function renderPrintDoc() {
   const data = getFilteredReports().slice().reverse(); // kronologis (lama → baru)
 
-  const dates = data.map((r) => r.date || "-").sort();
+  const groups = {};
+  data.forEach((r) => {
+    const key = r.date || "-";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+  const dates = Object.keys(groups).sort();
 
   let p = {};
   try { p = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch (e) { /* abaikan */ }
@@ -509,13 +515,23 @@ function renderPrintDoc() {
     tahun = max.slice(0, 4);
   }
 
-  const rows = data.map((r, i) => `
+  const rows = dates.map((date, i) => {
+    const items = groups[date];
+    const kegiatan = items.map((r) => escapeHtml(r.activity || "")).join("<br>");
+    const docs = items
+      .map((r) => r.photo
+        ? `<img src="${escapeHtml(r.photo)}" class="print-doc-img" alt="Dokumentasi" />`
+        : "")
+      .filter(Boolean)
+      .join(" ");
+    return `
       <tr>
         <td class="c">${i + 1}</td>
-        <td>${escapeHtml(formatDateID(r.date))}</td>
-        <td>${escapeHtml(r.activity || "")}</td>
-        <td class="c">${r.photo ? `<img src="${escapeHtml(r.photo)}" class="print-doc-img" alt="Dokumentasi" />` : "-"}</td>
-      </tr>`).join("");
+        <td>${escapeHtml(formatDateID(date))}</td>
+        <td>${kegiatan}</td>
+        <td class="c">${docs || "-"}</td>
+      </tr>`;
+  }).join("");
 
   return `
     <div class="print-doc">
