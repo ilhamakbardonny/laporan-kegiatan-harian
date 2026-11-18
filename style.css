@@ -369,8 +369,39 @@ body[data-theme="dark"] .btn-outline:hover {
     width: 100%;
   }
 
-  @media (max-width: 480px) {
-  
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar .form-control-sm,
+  .toolbar .form-select-sm {
+    width: 100%;
+    min-width: auto;
+  }
+
+  th, td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .action-group {
+    flex-direction: column;
+  }
+
+  .action-group .btn {
+    width: 100%;
+  }
+}
+
 /* ===== Preview & Cetak: Lembar Kegiatan (format A4) ===== */
 #printArea {
   display: none;
