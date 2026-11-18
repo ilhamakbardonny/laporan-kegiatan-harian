@@ -650,3 +650,14 @@ body[data-theme="dark"] .btn-outline:hover {
 .print-table.reveal tbody tr:nth-child(4) { animation-delay: 0.15s; }
 .print-table.reveal tbody tr:nth-child(5) { animation-delay: 0.2s; }
 .print-table.reveal tbody tr:nth-child(n+6) { animation-delay: 0.25s; }
+
+.reveal-anim {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal-anim.reveal {
+  opacity: 1;
+  transform: translateY(0);
+}

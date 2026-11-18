@@ -36,6 +36,7 @@ const saveProfileBtn = document.getElementById("saveProfile");
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let editingId = null;
 let selectedPhoto = null;
+let revealObserver = null;
 
 function showSaved() {
   let badge = document.querySelector(".saved-badge");
@@ -435,10 +436,18 @@ function renderPrintDoc() {
     </div>`;
 }
 
+function observePrintParts() {
+  if (!revealObserver) return;
+  document.querySelectorAll(".print-kop, .print-title, .print-info, .print-table, .print-sign").forEach((el) => {
+    revealObserver.observe(el);
+  });
+}
+
 function updatePrintPreview() {
   const html = renderPrintDoc();
   if (printArea) printArea.innerHTML = html;
   if (printPreview) printPreview.innerHTML = html;
+  observePrintParts();
 }
 
 form.addEventListener("submit", addOrUpdateReport);
@@ -509,12 +518,15 @@ document.addEventListener("click", (e) => {
   btn.classList.add("btn-tap");
 });
 
-const revealObserver = new IntersectionObserver((entries) => {
+revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     entry.target.classList.toggle("reveal", entry.isIntersecting);
   });
 }, { threshold: 0.15 });
 
-document.querySelectorAll(".print-kop, .print-title, .print-info, .print-table, .print-sign").forEach((el) => {
+document.querySelectorAll(".card-body > *, .toolbar, .site-footer, .header-inner > *").forEach((el) => {
+  if (el.getClientRects().length === 0) return;
+  el.classList.add("reveal-anim");
   revealObserver.observe(el);
 });
+observePrintParts();
