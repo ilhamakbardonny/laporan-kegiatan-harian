@@ -841,3 +841,13 @@ body[data-theme="dark"] .mini-stat {
 body[data-theme="dark"] .empty-state {
   background: #1e293b;
 }
+
+.month-header td {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.6rem 1rem;
+}

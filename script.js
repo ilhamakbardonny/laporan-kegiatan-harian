@@ -203,26 +203,44 @@ function renderReports() {
 
   emptyState.style.display = "none";
 
-  sorted.forEach((report, index) => {
-    const tr = document.createElement("tr");
-    tr.className = "row-added";
-    tr.style.animationDelay = `${index * 0.05}s`;
-    const docCell = report.photo
-      ? `<img src="${escapeHtml(report.photo)}" alt="Dokumentasi" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" />`
-      : "-";
-    tr.innerHTML = `
-      <td><span title="${escapeHtml(formatDateID(report.date))}">${escapeHtml(relDate(report.date))}</span></td>
-      <td><strong>${escapeHtml(report.activity)}</strong></td>
-      <td>${docCell}</td>
-      <td><span class="status-badge ${getStatusColorClass(report.status)}">${escapeHtml(report.status)}</span></td>
-      <td>
-        <div class="action-group">
-          <button class="btn btn-edit btn-sm" onclick="editReport('${report.id}')" title="Edit">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteReport('${report.id}')" title="Hapus">Hapus</button>
-        </div>
-      </td>
-    `;
-    tbody.appendChild(tr);
+  const monthGroups = {};
+  sorted.forEach((r) => {
+    const k = (r.date || "").slice(0, 7) || "-";
+    if (!monthGroups[k]) monthGroups[k] = [];
+    monthGroups[k].push(r);
+  });
+  const monthKeys = Object.keys(monthGroups).sort().reverse();
+  let rowIndex = 0;
+
+  monthKeys.forEach((mk) => {
+    if (!monthFilter && monthKeys.length > 1) {
+      const h = document.createElement("tr");
+      h.className = "month-header";
+      h.innerHTML = `<td colspan="5">${escapeHtml(mk === "-" ? "Tanpa Tanggal" : formatMonthYearID(mk + "-01"))}</td>`;
+      tbody.appendChild(h);
+    }
+    monthGroups[mk].forEach((report) => {
+      const tr = document.createElement("tr");
+      tr.className = "row-added";
+      tr.style.animationDelay = `${rowIndex * 0.05}s`;
+      rowIndex++;
+      const docCell = report.photo
+        ? `<img src="${escapeHtml(report.photo)}" alt="Dokumentasi" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" />`
+        : "-";
+      tr.innerHTML = `
+        <td><span title="${escapeHtml(formatDateID(report.date))}">${escapeHtml(relDate(report.date))}</span></td>
+        <td><strong>${escapeHtml(report.activity)}</strong></td>
+        <td>${docCell}</td>
+        <td><span class="status-badge ${getStatusColorClass(report.status)}">${escapeHtml(report.status)}</span></td>
+        <td>
+          <div class="action-group">
+            <button class="btn btn-edit btn-sm" onclick="editReport('${report.id}')" title="Edit">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteReport('${report.id}')" title="Hapus">Hapus</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
   });
 }
 
