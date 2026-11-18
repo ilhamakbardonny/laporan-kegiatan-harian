@@ -583,3 +583,11 @@ body[data-theme="dark"] .btn-outline:hover {
     font-size: 11pt;
   }
 }
+
+.print-instansi {
+  text-align: center;
+  font-weight: bold;
+  font-size: 13pt;
+  letter-spacing: 1pt;
+  margin-bottom: 2pt;
+}

@@ -541,6 +541,7 @@ function renderPrintDoc() {
 
   return `
     <div class="print-doc">
+      <div class="print-instansi">${escapeHtml((p.instansi || "..............................").toUpperCase())}</div>
       <h2 class="print-title">LEMBAR KEGIATAN</h2>
       <table class="print-info">
         <tr><td>Nama</td><td>:</td><td>${escapeHtml(p.nama || "..............................")}</td></tr>
