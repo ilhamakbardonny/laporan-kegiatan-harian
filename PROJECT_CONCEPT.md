@@ -120,3 +120,11 @@ Setiap laporan memiliki struktur:
   - Perbaikan bug: empty state ganda, preview foto kosong, favicon 404, Lottie 403 (dihapus).
   - Fix CSS: media query tak tertutup menyebabkan dokumen tampil dobel (penyebab "berantakan").
   - Animasi: reveal-on-scroll semua elemen (berulang), tap/pop tombol, hover lift, animasi details Identitas, transisi ikon tema & empty state.
+- v0.5.0 (2026-11-18): Polish UI/UX:
+  - Kartu statistik mini (Total/Selesai/Proses/Tertunda) difilter bulan.
+  - Skeleton loading tabel saat load, empty state dengan ikon & CTA.
+  - Tanggal relatif di tabel (Hari ini/Kemarin/N hari lalu).
+  - Ringkasan periode + tombol cetak di card Preview.
+  - Accent color picker (5 warna) via CSS var --primary, tersimpan localStorage.
+  - Tombol Install PWA (beforeinstallprompt), toast 'Data tersimpan' berikon.
+  - Animasi: ripple semua tombol, reveal-on-scroll semua elemen (berulang), details Identitas.
