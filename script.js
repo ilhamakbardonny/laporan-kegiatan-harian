@@ -196,10 +196,6 @@ function renderReports() {
     `;
     tbody.appendChild(tr);
   });
-
-  if (typeof AOS !== "undefined") {
-    AOS.refresh();
-  }
 }
 
 function updateStats() {
@@ -577,8 +573,8 @@ document.addEventListener("DOMContentLoaded", () => {
     AOS.init({
       duration: 800,
       easing: "ease-out",
-      once: false,
-      mirror: true,
+      once: true,
+      mirror: false,
     });
   }
 });
