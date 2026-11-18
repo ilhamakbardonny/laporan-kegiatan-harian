@@ -679,3 +679,30 @@ details[open] .row,
 details[open] .btn {
   animation: fadeSlide 0.35s ease backwards;
 }
+
+/* ===== Ripple klik ===== */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0);
+  animation: rippleAnim 0.5s ease-out forwards;
+  pointer-events: none;
+}
+
+.btn-outline .ripple,
+.btn-ghost .ripple {
+  background: rgba(99, 102, 241, 0.25);
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
