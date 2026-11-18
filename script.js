@@ -23,8 +23,6 @@ const filterDate = document.getElementById("filterDate");
 const filterMonth = document.getElementById("filterMonth");
 
 const exportBtn = document.getElementById("exportBtn");
-const importBtn = document.getElementById("importBtn");
-const importFile = document.getElementById("importFile");
 
 
 const photoInput = document.getElementById("photo");
@@ -325,50 +323,6 @@ function exportData() {
   showSaved();
 }
 
-function importData(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (!Array.isArray(imported)) throw new Error("Format tidak valid");
-      Swal.fire({
-        icon: "question",
-        title: "Impor Data",
-        text: `Impor ${imported.length} laporan? Data akan digabungkan dengan yang ada.`,
-        showCancelButton: true,
-        confirmButtonColor: "#6366f1",
-        cancelButtonColor: "#64748b",
-        confirmButtonText: "Impor",
-        cancelButtonText: "Batal",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          reports = [...reports, ...imported].map((r, i) => ({
-            ...r,
-            id: r.id || `imported-${Date.now()}-${i}`,
-          }));
-          save();
-          Swal.fire({
-            icon: "success",
-            title: "Berhasil",
-            text: "Data berhasil diimpor.",
-            timer: 1500,
-            showConfirmButton: false,
-            confirmButtonColor: "#6366f1",
-          });
-        }
-      });
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Gagal",
-        text: "Gagal mengimpor file: " + err.message,
-        confirmButtonColor: "#dc2626",
-      });
-    }
-  };
-  reader.readAsText(file);
-}
-
 function initGSAP() {
   if (typeof gsap === "undefined") return;
 
@@ -520,11 +474,6 @@ photoInput.addEventListener("change", (e) => {
 });
 
 exportBtn.addEventListener("click", exportData);
-importBtn.addEventListener("click", () => importFile.click());
-importFile.addEventListener("change", (e) => {
-  if (e.target.files.length) importData(e.target.files[0]);
-  e.target.value = "";
-});
 
 loadProfile();
 setToday();
