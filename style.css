@@ -516,7 +516,7 @@ body[data-theme="dark"] .btn-outline:hover {
 
 @page {
   size: A4;
-  margin: 20mm;
+  margin: 15mm 16mm;
 }
 
 @media print {
@@ -533,9 +533,6 @@ body[data-theme="dark"] .btn-outline:hover {
     color: #000;
   }
 
-  .print-doc {
-    font-size: 11pt;
-  }
 }
 
 @media (max-width: 768px) {
