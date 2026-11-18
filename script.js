@@ -511,10 +511,7 @@ document.addEventListener("click", (e) => {
 
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("reveal");
-      revealObserver.unobserve(entry.target);
-    }
+    entry.target.classList.toggle("reveal", entry.isIntersecting);
   });
 }, { threshold: 0.15 });
 
