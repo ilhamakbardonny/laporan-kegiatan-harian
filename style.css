@@ -500,7 +500,7 @@ body[data-theme="dark"] .btn-outline:hover {
 }
 
 .print-sign {
-  text-align: right;
+  text-align: center;
   margin-top: 10mm;
   font-size: 12pt;
   page-break-inside: avoid;
