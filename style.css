@@ -501,7 +501,9 @@ body[data-theme="dark"] .btn-outline:hover {
 
 .print-sign {
   text-align: right;
-  margin-top: 10mm;
+  width: 50%;
+  margin: 10mm 0 0 auto;
+  min-width: 220pt;
   font-size: 12pt;
   page-break-inside: avoid;
 }
