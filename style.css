@@ -848,3 +848,8 @@ body[data-theme="dark"] .empty-state {
   letter-spacing: 0.05em;
   padding: 0.6rem 1rem;
 }
+
+.print-libur td {
+  color: #6b7280;
+  font-style: italic;
+}

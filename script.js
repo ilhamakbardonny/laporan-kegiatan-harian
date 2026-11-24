@@ -497,12 +497,27 @@ function renderPrintDoc() {
     tahun = max.slice(0, 4);
   }
 
+  const expanded = [];
+  dates.forEach((d, i) => {
+    if (d !== "-" && i > 0 && dates[i - 1] !== "-" && dates[i - 1] < d) {
+      const cur = new Date(dates[i - 1] + "T00:00:00");
+      const end = new Date(d + "T00:00:00");
+      cur.setDate(cur.getDate() + 1);
+      while (cur < end) {
+        expanded.push(cur.toISOString().slice(0, 10));
+        cur.setDate(cur.getDate() + 1);
+      }
+    }
+    expanded.push(d);
+  });
+
   let kegiatanNo = 0;
-  const rows = dates.map((date, i) => {
-    const items = groups[date];
-    const kegiatan = items
-      .map((r) => `${++kegiatanNo}. ${escapeHtml(r.activity || "")}`)
-      .join("<br>");
+  const rows = expanded.map((date, i) => {
+    const items = groups[date] || [];
+    const isLibur = items.length === 0;
+    const kegiatan = isLibur
+      ? "Libur"
+      : items.map((r) => `${++kegiatanNo}. ${escapeHtml(r.activity || "")}`).join("<br>");
     const docs = items
       .map((r) => r.photo
         ? `<img src="${escapeHtml(r.photo)}" class="print-doc-img" alt="Dokumentasi" />`
@@ -510,7 +525,7 @@ function renderPrintDoc() {
       .filter(Boolean)
       .join(" ");
     return `
-      <tr>
+      <tr${isLibur ? ' class="print-libur"' : ""}>
         <td class="c">${i + 1}</td>
         <td>${escapeHtml(formatDateID(date))}</td>
         <td>${kegiatan}</td>
