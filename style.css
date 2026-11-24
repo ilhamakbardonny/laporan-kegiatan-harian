@@ -500,7 +500,7 @@ body[data-theme="dark"] .btn-outline:hover {
 }
 
 .print-sign {
-  text-align: center;
+  text-align: right;
   margin-top: 10mm;
   font-size: 12pt;
   page-break-inside: avoid;
@@ -513,6 +513,10 @@ body[data-theme="dark"] .btn-outline:hover {
 .print-sign .sign-name {
   font-weight: bold;
   margin-top: 60pt;
+}
+
+.print-sign .sign-role {
+  text-align: center;
 }
 
 @page {
