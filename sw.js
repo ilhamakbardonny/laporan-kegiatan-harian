@@ -1,4 +1,4 @@
-const CACHE_NAME = "laporan-kegiatan-v6";
+const CACHE_NAME = "laporan-kegiatan-v7";
 const ASSETS = [
   "./",
   "./index.html",
