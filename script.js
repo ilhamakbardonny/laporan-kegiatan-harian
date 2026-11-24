@@ -259,6 +259,7 @@ function renderReports() {
 
   emptyState.style.display = "none";
 
+  const monthFilter = filterMonth ? filterMonth.value : "";
   const monthGroups = {};
   sorted.forEach((r) => {
     const k = (r.date || "").slice(0, 7) || "-";
