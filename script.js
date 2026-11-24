@@ -593,7 +593,7 @@ function observePrintParts() {
 
 function updatePrintPreview() {
   const html = renderPrintDoc();
-  if (printArea) printArea.innerHTML = html;
+  if (printArea) printArea.innerHTML = '<div class="print-paper print-paper--print">' + html + "</div>";
   if (printPreview) printPreview.innerHTML = html;
   if (previewSummary) {
     const n = getFilteredReports().length;

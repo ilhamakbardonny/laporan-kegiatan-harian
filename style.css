@@ -516,7 +516,7 @@ body[data-theme="dark"] .btn-outline:hover {
 
 @page {
   size: A4;
-  margin: 15mm 16mm;
+  margin: 18mm 16mm;
 }
 
 @media print {
@@ -526,6 +526,16 @@ body[data-theme="dark"] .btn-outline:hover {
 
   #printArea {
     display: block !important;
+  }
+
+  .print-paper--print {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
   }
 
   body {
