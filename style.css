@@ -515,7 +515,8 @@ body[data-theme="dark"] .btn-outline:hover {
   margin-top: 60pt;
 }
 
-.print-sign .sign-role {
+.print-sign .sign-role,
+.print-sign .sign-date {
   text-align: center;
 }
 

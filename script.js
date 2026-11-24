@@ -576,7 +576,7 @@ function renderPrintDoc() {
         <tbody>${rows || `<tr><td colspan="4" class="c">Tidak ada data.</td></tr>`}</tbody>
       </table>
       <div class="print-sign">
-        <p>Bengkulu, ${escapeHtml(formatDateID(new Date().toISOString().slice(0, 10)))}</p>
+        <p class="sign-date">Bengkulu, ${escapeHtml(formatDateID(new Date().toISOString().slice(0, 10)))}</p>
         <p class="sign-role">Pelaksana Tugas,</p>
         <p class="sign-name">${escapeHtml(p.nama || "..............................")}</p>
         <p>${escapeHtml(p.posisi || "")}</p>
