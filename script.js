@@ -47,6 +47,12 @@ let editingId = null;
 let selectedPhoto = null;
 let revealObserver = null;
 
+const SUPABASE_URL = "https://hajjworvhzpvnyfaowuv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_AHYvuEyJWztrRQRVvezsP_A_ebLi-YxA";
+const sb = window.supabase && SUPABASE_URL && SUPABASE_KEY
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
+
 function showSaved() {
   let badge = document.querySelector(".saved-badge");
   if (!badge) {
@@ -97,6 +103,11 @@ if (saveProfileBtn) {
       posisi: profilePosisi ? profilePosisi.value.trim() : "",
       instansi: profileInstansi ? profileInstansi.value.trim() : "",
     }));
+    cloudUpsertProfile({
+      nama: profileNama ? profileNama.value.trim() : "",
+      posisi: profilePosisi ? profilePosisi.value.trim() : "",
+      instansi: profileInstansi ? profileInstansi.value.trim() : "",
+    });
     updatePrintPreview();
     showSaved();
   });
@@ -123,6 +134,64 @@ function syncDateWithMonthFilter() {
     setToday();
   }
 }
+function cloudUpsertReport(r) {
+  if (!sb || !r) return;
+  sb.from("reports")
+    .upsert({
+      id: r.id,
+      date: r.date,
+      activity: r.activity,
+      photo: r.photo || null,
+      status: r.status,
+      updated_at: new Date().toISOString(),
+    })
+    .then(({ error }) => { if (error) console.log("cloud upsert gagal:", error); });
+}
+
+function cloudDeleteReport(id) {
+  if (!sb) return;
+  sb.from("reports").delete().eq("id", id).then(({ error }) => { if (error) console.log("cloud delete gagal:", error); });
+}
+
+function cloudUpsertProfile(p) {
+  if (!sb) return;
+  sb.from("profile")
+    .upsert({ id: 1, name: p.nama, position: p.posisi, institution: p.instansi })
+    .then(({ error }) => { if (error) console.log("cloud profile gagal:", error); });
+}
+
+async function initCloud() {
+  if (!sb) return;
+  try {
+    const { data, error } = await sb.from("reports").select("*").order("date", { ascending: false });
+    if (!error && data && data.length) {
+      reports = data.map((r) => ({
+        id: r.id,
+        date: r.date,
+        activity: r.activity,
+        photo: r.photo || "",
+        status: r.status,
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+      renderReports();
+      updateMiniStats();
+    }
+  } catch (e) { console.log("cloud fetch reports gagal:", e); }
+  try {
+    const { data, error } = await sb.from("profile").select("*").eq("id", 1).maybeSingle();
+    if (!error && data) {
+      const p = { nama: data.name || "", posisi: data.position || "", instansi: data.institution || "" };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+      if (profileNama) profileNama.value = p.nama;
+      if (profilePosisi) profilePosisi.value = p.posisi;
+      if (profileInstansi) profileInstansi.value = p.instansi;
+      updatePrintPreview();
+    }
+  } catch (e) { console.log("cloud fetch profile gagal:", e); }
+}
+
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   renderReports();
@@ -277,10 +346,12 @@ function addOrUpdateReport(e) {
     return;
   }
 
+  let savedObj = null;
   if (editingId) {
     const idx = reports.findIndex((r) => r.id === editingId);
     if (idx !== -1) {
       reports[idx] = { ...reports[idx], ...reportData, updatedAt: new Date().toISOString() };
+      savedObj = reports[idx];
     }
     Swal.fire({
       icon: "success",
@@ -291,11 +362,12 @@ function addOrUpdateReport(e) {
       confirmButtonColor: "#6366f1",
     });
   } else {
-    reports.push({
+    savedObj = {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       ...reportData,
       createdAt: new Date().toISOString(),
-    });
+    };
+    reports.push(savedObj);
     Swal.fire({
       icon: "success",
       title: "Berhasil",
@@ -306,6 +378,7 @@ function addOrUpdateReport(e) {
     });
   }
 
+  cloudUpsertReport(savedObj);
   save();
   resetForm();
 }
@@ -341,6 +414,7 @@ window.deleteReport = function (id) {
     cancelButtonText: "Batal",
   }).then((result) => {
     if (result.isConfirmed) {
+      cloudDeleteReport(id);
       const tr = Array.from(tbody.querySelectorAll("tr")).find((row) => {
         const btn = row.querySelector(`button[onclick="deleteReport('${id}')"]`);
         return btn && btn.closest("tr") === row;
@@ -598,6 +672,7 @@ setToday();
 syncDateWithMonthFilter();
 updatePhotoPreview();
 renderReports();
+initCloud();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
