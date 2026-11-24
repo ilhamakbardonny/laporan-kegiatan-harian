@@ -481,7 +481,7 @@ body[data-theme="dark"] .btn-outline:hover {
 .print-table thead th {
   text-align: center;
   font-weight: bold;
-  background: #f1f1f1;
+  background: #ffff00;
 }
 
 .print-table td:nth-child(2),
