@@ -43,8 +43,8 @@ let editingId = null;
 let selectedPhoto = null;
 let revealObserver = null;
 
-const SUPABASE_URL = "https://hajjworvhzpvnyfaowuv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_AHYvuEyJWztrRQRVvezsP_A_ebLi-YxA";
+const SUPABASE_URL = "https://ctgjahasweqoeswdjsza.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0Z2phaGFzd2Vxb2Vzd2Rqc3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0ODI2NTYsImV4cCI6MjExMTA1ODY1Nn0.FPB69K3dr6OLXWFpFG1QZMxIdfPWKKcCaUOCXFHyaqM";
 const sb = window.supabase && SUPABASE_URL && SUPABASE_KEY
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
