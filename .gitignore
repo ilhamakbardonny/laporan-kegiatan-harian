@@ -3,3 +3,4 @@ node_modules/
 .DS_Thumbs
 *.log
 nul
+.kilo/
