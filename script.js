@@ -160,6 +160,18 @@ async function initCloud() {
   if (!sb) return;
   try {
     const { data, error } = await sb.from("reports").select("*").order("date", { ascending: false });
+    if (!error && !data.length && reports.length) {
+      // migrasi satu kali: localStorage -> Supabase
+      const rows = reports.map((r) => ({
+        id: r.id, date: r.date, activity: r.activity,
+        photo: r.photo || null, status: r.status,
+        created_at: r.createdAt || new Date().toISOString(),
+        updated_at: r.updatedAt || new Date().toISOString(),
+      }));
+      await sb.from("reports").upsert(rows).then(({ error: e2 }) => {
+        if (e2) console.log("migrasi cloud gagal:", e2);
+      });
+    }
     if (!error && data && data.length) {
       reports = data.map((r) => ({
         id: r.id,
