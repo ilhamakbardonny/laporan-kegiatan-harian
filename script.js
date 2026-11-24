@@ -21,10 +21,6 @@ const previewSummary = document.getElementById("previewSummary");
 const accentPicker = document.getElementById("accentPicker");
 const installBtn = document.getElementById("installBtn");
 const emptyAddBtn = document.getElementById("emptyAddBtn");
-const msTotal = document.getElementById("msTotal");
-const msSelesai = document.getElementById("msSelesai");
-const msProses = document.getElementById("msProses");
-const msTertunda = document.getElementById("msTertunda");
 
 const searchInput = document.getElementById("searchInput");
 const filterStatus = document.getElementById("filterStatus");
@@ -176,8 +172,7 @@ async function initCloud() {
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
       renderReports();
-      updateMiniStats();
-    }
+        }
   } catch (e) { console.log("cloud fetch reports gagal:", e); }
   try {
     const { data, error } = await sb.from("profile").select("*").eq("id", 1).maybeSingle();
@@ -232,14 +227,6 @@ function getMonthFiltered() {
   return monthFilter
     ? reports.filter((r) => (r.date || "").slice(0, 7) === monthFilter)
     : reports;
-}
-
-function updateMiniStats() {
-  const data = getMonthFiltered();
-  if (msTotal) msTotal.textContent = data.length;
-  if (msSelesai) msSelesai.textContent = data.filter((r) => r.status === "Selesai").length;
-  if (msProses) msProses.textContent = data.filter((r) => r.status === "Proses").length;
-  if (msTertunda) msTertunda.textContent = data.filter((r) => r.status === "Tertunda").length;
 }
 
 function relDate(dateStr) {
@@ -718,7 +705,7 @@ revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15 });
 
-document.querySelectorAll(".card-body > *, .toolbar, .site-footer, .header-inner > *, .mini-stat").forEach((el) => {
+document.querySelectorAll(".card-body > *, .toolbar, .site-footer, .header-inner > *").forEach((el) => {
   if (el.getClientRects().length === 0) return;
   el.classList.add("reveal-anim");
   revealObserver.observe(el);
